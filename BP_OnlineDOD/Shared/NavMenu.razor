@@ -1,37 +1,47 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">BP_OnlineDOD</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+﻿<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+    <div class="navbar-brand">FRI</div>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu" type="button">
         <span class="navbar-toggler-icon"></span>
     </button>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
+    <div class="@NavMenuCssClass navbar-collapse justify-content-center" @onclick="CollapseNavMenu">
+        <ul class="navbar-nav">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                Domov
             </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="preco-studovat-u-nas" Match="NavLinkMatch.Prefix">
+                Prečo u nás študovať?
             </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            <NavLink class="nav-link" href="pohlad-studentov" Match="NavLinkMatch.Prefix">
+                Pohľad študentov
             </NavLink>
-        </li>
-    </ul>
-</div>
+            <NavLink class="nav-link" href="studijne-programy" Match="NavLinkMatch.Prefix">
+                Študijné programy
+            </NavLink>
+            <NavLink class="nav-link" href="na-stiahnutie" Match="NavLinkMatch.Prefix">
+                Na Stiahnutie
+            </NavLink>
+            <NavLink class="nav-link" href="tvoja-kariera" Match="NavLinkMatch.Prefix">
+                Tvoja kariéra
+            </NavLink>
+            <NavLink class="nav-link" href="online-chat" Match="NavLinkMatch.Prefix">
+                Online chat
+            </NavLink>
+        </ul>
+    </div>
+</nav>
 
 @code {
-    private bool collapseNavMenu = true;
+    bool collapseNavMenu = true;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu()
+    void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    void CollapseNavMenu()
+    {
+        collapseNavMenu = true;
     }
 }
