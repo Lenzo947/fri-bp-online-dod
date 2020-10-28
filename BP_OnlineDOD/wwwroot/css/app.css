@@ -4,10 +4,6 @@
     outline: 1px solid #26b050;
 }
 
-main > .container-fluid {
-    padding: 56px 0 0 0;
-}
-
 .invalid {
     outline: 1px solid red;
 }
