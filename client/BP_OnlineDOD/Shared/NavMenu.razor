@@ -1,0 +1,67 @@
+﻿
+
+<div class="blue-bg">
+    <div class="container">
+        <div class="row">
+            <div class="table">
+                <div class="cell" style="width: 25%; padding: 2%; vertical-align: middle">
+                    <a href="http://www.fri.uniza.sk/" title="Na stránku Fakulty riadenia a informatiky"><img id="the-it-man" src="images/fri-logo.svg"></a>
+                    <a href="http://www.budfri.sk/" title="Na stránku BuďFRI.sk"><img id="the-it-man" src="images/budfri-logo.svg"></a>
+                </div>
+                <div class="cell">
+                    <img src="images/manik.svg" class="r">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-bg">
+        <div class="navbar-brand"></div>
+        <button class="navbar-toggler" @onclick="ToggleNavMenu" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="@NavMenuCssClass navbar-collapse justify-content-center" @onclick="CollapseNavMenu">
+            <ul class="navbar-nav justify-content-center">
+                <NavLink class="nav-link px-3" href="" Match="NavLinkMatch.All">
+                    Home
+                </NavLink>
+                <NavLink class="nav-link px-3" href="preco-studovat-u-nas" Match="NavLinkMatch.Prefix">
+                    Prečo u nás študovať?
+                </NavLink>
+                <NavLink class="nav-link px-3" href="pohlad-studentov" Match="NavLinkMatch.Prefix">
+                    Pohľad študentov
+                </NavLink>
+                <NavLink class="nav-link px-3" href="studijne-programy" Match="NavLinkMatch.Prefix">
+                    Študijné programy
+                </NavLink>
+                <NavLink class="nav-link px-3" href="na-stiahnutie" Match="NavLinkMatch.Prefix">
+                    Na stiahnutie
+                </NavLink>
+                <NavLink class="nav-link px-3" href="tvoja-kariera" Match="NavLinkMatch.Prefix">
+                    Tvoja kariéra
+                </NavLink>
+                <NavLink class="nav-link px-3 online-chat" href="online-chat" Match="NavLinkMatch.Prefix">
+                    On-line chat
+                </NavLink>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+@code {
+    bool collapseNavMenu = true;
+
+    string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    void CollapseNavMenu()
+    {
+        collapseNavMenu = true;
+    }
+}

@@ -4,6 +4,7 @@
  * Copyright 2011-2020 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+@import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -7195,35 +7196,58 @@ a.text-dark:hover, a.text-dark:focus {
     color: inherit;
     border-color: #dee2e6; } }
 
-/*------------------------------------
-- COLOR primary
-------------------------------------*/
-.alert-primary {
-  color: #d29801;
-  background-color: #ff10611a;
-  border-color: #ff101106; }
+.valid.modified:not([type=checkbox]) {
+  outline: 1px solid #26b050; }
 
-.alert-primary hr {
-  border-top-color: #fefaed; }
+.invalid {
+  outline: 1px solid red; }
 
-.alert-primary .alert-link {
-  color: #9f7300; }
+.validation-message {
+  color: red; }
 
-.badge-primary {
-  color: #15489e;
-  background-color: #fece50; }
+#blazor-error-ui {
+  background: lightyellow;
+  bottom: 0;
+  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000; }
 
-.badge-primary[href]:hover, .badge-primary[href]:focus {
-  color: #15489e;
-  background-color: #fdbf1d; }
+body {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff; }
 
-.bg-primary {
-  background-color: #fece50 !important; }
+#blazor-error-ui .dismiss {
+  cursor: pointer;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.5rem; }
 
-a.bg-primary:hover, a.bg-primary:focus,
-button.bg-primary:hover,
-button.bg-primary:focus {
-  background-color: #fdbf1d !important; }
+.cell {
+  display: table-cell;
+  vertical-align: bottom; }
+
+.blue-bg {
+  background-color: #c5b1a0;
+  border-bottom: 4px solid #888888; }
+
+.table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 22px;
+  display: table;
+  padding: 0;
+  margin: 0; }
+
+#the-it-man {
+  margin-top: 25px;
+  max-width: 650px; }
 
 .fri-footer {
   color: #999;
@@ -7231,116 +7255,28 @@ button.bg-primary:focus {
   background-color: #fece50;
   border-top: .05rem solid #e5e5e5; }
 
-.border-primary {
-  border-color: #fece50 !important; }
+.navbar-bg {
+  background-image: -webkit-linear-gradient(top, #fff 0, #f8f8f8 100%);
+  background-image: -o-linear-gradient(top, #fff 0, #f8f8f8 100%);
+  background-image: linear-gradient(to bottom, #fff 0, #f8f8f8 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff8f8f8', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 5px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 5px rgba(0, 0, 0, 0.075);
+  background-color: #f8f8f8;
+  border-color: #e7e7e7;
+  border: 1px solid rgba(0, 0, 0, 0.05); }
 
-.btn {
-  font-weight: 600; }
-
-.btn-primary {
-  color: #15489e;
-  background-color: #fece50;
-  border-color: #fece50; }
-
-.btn-primary:hover {
-  color: #15489e;
-  background-color: #fdc42c;
-  border-color: #fdbf1d; }
-
-.btn-primary:focus, .btn-primary.focus {
-  box-shadow: 0 0 0 0.2rem rgba(254, 206, 80, 0.5); }
-
-.btn-primary.disabled, .btn-primary:disabled {
-  color: #15489e;
-  background-color: #fece50;
-  border-color: #fece50; }
-
-.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
-  color: #15489e;
-  background-color: #fdbf1d;
-  border-color: #fdbb0e; }
-
-.btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus, .show > .btn-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem rgba(254, 206, 80, 0.5); }
-
-.btn-outline-primary {
-  color: #fece50;
-  background-color: transparent;
-  border-color: #fece50; }
-
-.btn-outline-primary:hover {
-  color: #15489e;
-  background-color: #fece50;
-  border-color: #fece50; }
-
-.btn-outline-primary:focus, .btn-outline-primary.focus {
-  box-shadow: 0 0 0 0.2rem rgba(254, 206, 80, 0.5); }
-
-.btn-outline-primary.disabled, .btn-outline-primary:disabled {
-  color: #fece50;
-  background-color: transparent; }
-
-.btn-outline-primary:not(:disabled):not(.disabled):active, .btn-outline-primary:not(:disabled):not(.disabled).active, .show > .btn-outline-primary.dropdown-toggle {
-  color: #15489e;
-  background-color: #fece50;
-  border-color: #fece50; }
-
-.btn-outline-primary:not(:disabled):not(.disabled):active:focus, .btn-outline-primary:not(:disabled):not(.disabled).active:focus, .show > .btn-outline-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem rgba(254, 206, 80, 0.5); }
-
-.list-group-item-primary {
-  color: #d29801;
-  background-color: #ff101106; }
-
-.list-group-item-primary.list-group-item-action:hover, .list-group-item-primary.list-group-item-action:focus {
-  color: #d29801;
-  background-color: #fefaed; }
-
-.list-group-item-primary.list-group-item-action.active {
-  color: #15489e;
-  background-color: #d29801;
-  border-color: #d29801; }
-
-main {
-  min-height: calc(100vh - 65px); }
-
-main > .container-fluid, main > .container-sm, main > .container-md, main > .container-lg, main > .container-xl {
-  padding: 128px 0 44px 0; }
-
-@media (max-width: 991.4px) {
+@media (max-width: 1199.4px) {
   .navbar .navbar-nav {
     display: inline-block;
     float: none;
-    vertical-align: top; }
+    vertical-align: top;
+    width: 100%; }
   .navbar .navbar-collapse {
     text-align: center; } }
 
-.navbar-light .navbar-nav .nav-link.active {
-  color: rgba(21, 72, 158, 0.9);
-  font-weight: 600; }
-
-.navbar-light .navbar-nav .nav-link {
-  color: rgba(21, 72, 158, 0.5);
-  font-weight: 600; }
-
-.navbar-light .navbar-brand {
-  color: rgba(21, 72, 158, 0.9);
-  font-weight: 600; }
-
-.table-primary,
-.table-primary > th,
-.table-primary > td {
-  background-color: #ff101106; }
-
-.table-hover .table-primary:hover {
-  background-color: #fefaed; }
-
-.table-hover .table-primary:hover > td,
-.table-hover .table-primary:hover > th {
-  background-color: #fefaed; }
-
-.text-primary {
-  color: #fece50 !important; }
-
-a.text-primary:hover, a.text-primary:focus {
-  color: #fdbf1d !important; }
+.navbar-light .navbar-nav .nav-link.active, .online-chat {
+  font-weight: bold; }
