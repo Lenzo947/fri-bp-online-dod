@@ -1,5 +1,21 @@
+$grid-breakpoints: (
+    // Extra small screen / phone
+    xs: 0,
+    // Small screen / phone
+    sm: 576px,
+    // Medium screen / tablet
+    md: 768px,
+    // Large screen / desktop
+    lg: 992px,
+    // Extra large screen / wide desktop
+    xl: 1280px
+);
+
+
 @import "bootstrap/scss/bootstrap";
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+
 
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
@@ -64,13 +80,6 @@ body {
     max-width: 650px;
 }
 
-.fri-footer {
-    color: #999;
-    text-align: center;
-    background-color: #fece50;
-    border-top: .05rem solid #e5e5e5;
-}
-
 .navbar-bg {
     background-image: -webkit-linear-gradient(top, #fff 0, #f8f8f8 100%);
     background-image: -o-linear-gradient(top, #fff 0, #f8f8f8 100%);
@@ -86,7 +95,7 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-@media (max-width: 1199.4px) {
+@media (max-width: 1279.4px) {
     .navbar .navbar-nav {
         display: inline-block;
         float: none;
@@ -96,9 +105,78 @@ body {
 
     .navbar .navbar-collapse {
         text-align: center;
+        flex-basis: 100%;
+        flex-grow: 1;
+        align-items: center;
     }
 }
 
 .navbar-light .navbar-nav .nav-link.active, .online-chat {
     font-weight: bold;
+}
+
+@media (min-width: 768px) {
+    .container-main {
+        width: 750px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container-main {
+        width: 970px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container-main {
+        width: 1170px;
+    }
+}
+
+.container-main {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.stuha-bok {
+    bottom: 0;
+    display: block;
+    position: fixed;
+    right: 0;
+    width: 20%;
+    z-index: 10;
+}
+
+.primacky .grey {
+    background-color: #393536;
+    color: white;
+}
+
+.primacky .green {
+    background-color: #cce310;
+    color: #393536;
+}
+
+.primacky div {
+    font-size: 25px;
+    padding: 15px 0;
+    font-weight: bold;
+}
+
+.primacky a {
+    text-decoration: none;
+    text-decoration-line: none;
+    text-decoration-style: initial;
+    text-decoration-color: initial;
+}
+
+.primacky {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+textarea {
+    resize: none;
 }

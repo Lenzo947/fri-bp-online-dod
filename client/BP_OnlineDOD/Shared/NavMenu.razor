@@ -1,7 +1,7 @@
 ﻿
 
 <div class="blue-bg">
-    <div class="container">
+    <div class="container-fluid container-main">
         <div class="row">
             <div class="table">
                 <div class="cell" style="width: 25%; padding: 2%; vertical-align: middle">
@@ -16,38 +16,51 @@
     </div>
 </div>
 
-<div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light navbar-bg">
+<div class="container-fluid container-main">
+    <nav class="navbar navbar-expand-xl navbar-light navbar-bg px-0">
         <div class="navbar-brand"></div>
-        <button class="navbar-toggler" @onclick="ToggleNavMenu" type="button">
+        <button class="navbar-toggler mr-3 my-2" @onclick="ToggleNavMenu" type="button">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="@NavMenuCssClass navbar-collapse justify-content-center" @onclick="CollapseNavMenu">
-            <ul class="navbar-nav justify-content-center">
-                <NavLink class="nav-link px-3" href="" Match="NavLinkMatch.All">
+            <ul class="navbar-nav justify-content-center w-100">
+                <NavLink class="nav-link px-4" href="" Match="NavLinkMatch.All">
                     Home
                 </NavLink>
-                <NavLink class="nav-link px-3" href="preco-studovat-u-nas" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-link px-4" href="preco-studovat-u-nas" Match="NavLinkMatch.Prefix">
                     Prečo u nás študovať?
                 </NavLink>
-                <NavLink class="nav-link px-3" href="pohlad-studentov" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-link px-4" href="pohlad-studentov" Match="NavLinkMatch.Prefix">
                     Pohľad študentov
                 </NavLink>
-                <NavLink class="nav-link px-3" href="studijne-programy" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-link px-4" href="studijne-programy" Match="NavLinkMatch.Prefix">
                     Študijné programy
                 </NavLink>
-                <NavLink class="nav-link px-3" href="na-stiahnutie" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-link px-4" href="na-stiahnutie" Match="NavLinkMatch.Prefix">
                     Na stiahnutie
                 </NavLink>
-                <NavLink class="nav-link px-3" href="tvoja-kariera" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-link px-4" href="tvoja-kariera" Match="NavLinkMatch.Prefix">
                     Tvoja kariéra
                 </NavLink>
-                <NavLink class="nav-link px-3 online-chat" href="online-chat" Match="NavLinkMatch.Prefix">
+                <NavLink class="nav-link px-4 online-chat" href="online-chat" Match="NavLinkMatch.Prefix">
                     On-line chat
                 </NavLink>
             </ul>
         </div>
     </nav>
+</div>
+
+<div class="stuha-bok d-none d-md-block">
+    <a href="https://vzdelavanie.uniza.sk/prijimacky/" title="Na stránku elektronickej prihlášky">
+        <img src="images/stuha-mj-2020.svg" class="r">
+    </a>
+</div>
+
+<div class="primacky d-md-none mt-3">
+    <a href="https://vzdelavanie.uniza.sk/prijimacky/" title="Na stránku elektronickej prihlášky">
+        <div class="grey">Podávanie prihlášok</div>
+        <div class="green">do 31. mája 2020</div>
+    </a>
 </div>
 
 @code {

@@ -4,16 +4,25 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
-<h1>Správa</h1>
+<h1>Online deň otvorených dverí</h1>
+<p>
+    Pridávanie otázok a reakcií je <b>otvorené</b>.
+</p>
 
-<textarea class="form-control mb-2" form="commentForm" rows="3" @bind="TextToSend"></textarea>
+<hr />
 
-<form @onsubmit="Submit" class="mb-4" id="commentForm">
+<textarea 
+    @bind="TextToSend"
+    class="form-control mb-2"
+    form="commentForm"
+    placeholder="Správa..."
+    rows="5"
+    oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';" 
+    ></textarea>
+
+<form @onsubmit="Submit" class="mb-5" id="commentForm">
     <button type="submit" class="btn btn-primary">Odoslať</button>
 </form>
-
-
-
 
 @if (Messages != null)
 {
