@@ -18,33 +18,54 @@
 
 @if (state == STATE.CREATE) // if app is in CREATE state
 {
-    <h4>Nová správa</h4>
-    <textarea @bind="TextToSend"
-              class="form-control mb-2"
-              placeholder="Správa..."
-              rows="5"
-              oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></textarea>
+    <EditForm Model="MessageModel" OnValidSubmit="Add">
+        <DataAnnotationsValidator />
 
-    <div class="mb-5">
-        <button @onclick="Add" type="submit" class="btn btn-primary"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
-        <button @onclick="ToNone" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť správu</button>
-    </div>
+        <label for="title">Nová správa</label>
+
+        <InputTextArea @bind-Value="MessageModel.Text"
+                       class="form-control mb-2"
+                       id="title"
+                       placeholder="Správa..."
+                       rows="5"
+                       oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+
+        <div class="mb-2">
+            <ValidationSummary />
+        </div>
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-primary"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
+            <button @onclick="ToNone" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť správu</button>
+        </div>
+    </EditForm>
 }
 
-@if (state == STATE.EDIT_DELETE) // if app is in DELETE state
+@if (state == STATE.EDIT_DELETE) // if app is in EDIT_DELETE state
 {
-    <h4>Úprava správy</h4>
-    <textarea @bind="TextToSend"
-              class="form-control mb-2"
-              placeholder="Správa..."
-              rows="5"
-              oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></textarea>
+    <EditForm Model="MessageModel" OnValidSubmit="Edit">
+        <DataAnnotationsValidator />
 
-    <div class="mb-5">
-        <button @onclick="Edit" class="btn btn-primary"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
-        <button @onclick="Delete" class="btn btn-primary"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
-        <button @onclick="ToNone" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
-    </div>
+        <label for="title">Úprava správy</label>
+
+        <InputTextArea @bind-Value="MessageModel.Text"
+                       class="form-control mb-2"
+                       id="title"
+                       placeholder="Správa..."
+                       rows="5"
+                       oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+
+        <div class="mb-2">
+            <ValidationSummary />
+        </div>
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-primary"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+            <button @onclick="Delete" type="button" class="btn btn-primary"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
+            <button @onclick="ToNone" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
+        </div>
+
+    </EditForm>
 }
 
 @if (Messages != null) // wait for all messages to load first
@@ -71,92 +92,85 @@
     }
 }
 
-
 @code {
-    public virtual int SelectedMessageId { get; set; }
 
-    public virtual string TextToSend { get; set; }
+    protected Message MessageModel { get; set; } = new Message();
 
     public virtual IEnumerable<Message> Messages { get; set; }
-
-    public async Task Add(EventArgs eventArgs)
-    {
-        var payload = new { Text = TextToSend, ThumbsUpCount = new Random().Next(0, 100) };
-
-        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/messages", payload);
-
-        state = STATE.NONE;
-
-        if (response.IsSuccessStatusCode)
-        {
-            await Load();
-
-            //var message = await response.Content.ReadFromJsonAsync<Message>();
-
-            //navigationManager.NavigateTo("online-chat", true);
-        }
-    }
-
-    public async Task Edit(EventArgs eventArgs)
-    {
-        var message = await httpClient.GetFromJsonAsync<Message>("https://localhost:44317/api/messages/" + SelectedMessageId);
-
-        var payload = new Message()
-        {
-            Id = message.Id,
-            Text = TextToSend,
-            ThumbsUpCount = message.ThumbsUpCount,
-            TimeSent = message.TimeSent
-        };
-
-        var response = await httpClient.PutAsJsonAsync("https://localhost:44317/api/messages/" + message.Id, payload);
-
-        state = STATE.NONE;
-
-        if (response.IsSuccessStatusCode)
-        {
-            await Load();
-
-            //var message = await response.Content.ReadFromJsonAsync<Message>();
-
-            //navigationManager.NavigateTo("online-chat", true);
-        }
-    }
-
-    public async Task Delete(EventArgs eventArgs)
-    {
-        var response = await httpClient.DeleteAsync("https://localhost:44317/api/messages/" + SelectedMessageId);
-
-        state = STATE.NONE;
-
-        if (response.IsSuccessStatusCode)
-        {
-            await Load();
-
-            //var message = await response.Content.ReadFromJsonAsync<Message>();
-
-            //navigationManager.NavigateTo("online-chat", true);
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
         await Load();
     }
 
-
     protected async Task Load()
     {
         Messages = await httpClient.GetFromJsonAsync<IEnumerable<Message>>("https://localhost:44317/api/messages");
     }
 
+    public async Task Add()
+    {
+        var payload = new { Text = MessageModel.Text, ThumbsUpCount = new Random().Next(0, 100) };
+
+        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/messages", payload);
+
+        //state = STATE.NONE;
+
+        if (response.IsSuccessStatusCode)
+        {
+            ClearFields();
+
+            await Load();
+
+            //var message = await response.Content.ReadFromJsonAsync<Message>();
+
+            //navigationManager.NavigateTo("online-chat", true);
+        }
+    }
+
     protected async Task ShowEdit(int id)
     {
-        var message = await httpClient.GetFromJsonAsync<Message>("https://localhost:44317/api/messages/" + id);
+        MessageModel = await httpClient.GetFromJsonAsync<Message>("https://localhost:44317/api/messages/" + id);
 
-        SelectedMessageId = message.Id;
-        TextToSend = message.Text;
         state = STATE.EDIT_DELETE;
+    }
+
+    public async Task Edit()
+    {
+        var response = await httpClient.PutAsJsonAsync("https://localhost:44317/api/messages/" + MessageModel.Id, MessageModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            ToNone();
+
+            await Load();
+
+
+            //var message = await response.Content.ReadFromJsonAsync<Message>();
+
+            //navigationManager.NavigateTo("online-chat", true);
+        }
+    }
+
+    public async Task Delete()
+    {
+        var response = await httpClient.DeleteAsync("https://localhost:44317/api/messages/" + MessageModel.Id);
+
+        if (response.IsSuccessStatusCode)
+        {
+            ToNone();
+
+            await Load();
+
+            //var message = await response.Content.ReadFromJsonAsync<Message>();
+
+            //navigationManager.NavigateTo("online-chat", true);
+        }
+    }
+
+    protected void ClearFields()
+    {
+        MessageModel.Text = null;
     }
 
     private enum STATE
@@ -166,11 +180,6 @@
         EDIT_DELETE
     }
     STATE state = STATE.NONE;
-
-    protected void ClearFields()
-    {
-        TextToSend = null;
-    }
 
     protected void ToCreate()
     {
