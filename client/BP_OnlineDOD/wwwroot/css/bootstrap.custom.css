@@ -7275,7 +7275,7 @@ body {
     flex-grow: 1;
     align-items: center; } }
 
-.navbar-light .navbar-nav .nav-link.active, .online-chat {
+.nav-link.active, .online-chat {
   font-weight: bold; }
 
 @media (min-width: 768px) {
