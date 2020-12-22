@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "BP_OnlineDOD_Server": {
+    "BP_OnlineDOD.Server": {
       "commandName": "Project",
       "launchBrowser": false,
       "launchUrl": "weatherforecast",

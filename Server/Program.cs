@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace BP_OnlineDOD_Server
+namespace BP_OnlineDOD.Server
 {
     public class Program
     {

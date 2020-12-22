@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using BP_OnlineDOD_Server.Data;
+using BP_OnlineDOD.Server.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 
 
-namespace BP_OnlineDOD_Server
+namespace BP_OnlineDOD.Server
 {
     public class Startup
     {
@@ -32,7 +32,8 @@ namespace BP_OnlineDOD_Server
             services.AddDbContext<OnlineDODContext>(opt => opt.UseSqlServer
                 (Configuration.GetConnectionString("OnlineDODConnection")));
 
-            services.AddControllers().AddNewtonsoftJson(s => {
+            services.AddControllers().AddNewtonsoftJson(s =>
+            {
                 s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
 

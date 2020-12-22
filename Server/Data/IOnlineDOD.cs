@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using BP_OnlineDOD_Shared.Models;
+using BP_OnlineDOD.Shared.Models;
 
-namespace BP_OnlineDOD_Server.Data
+namespace BP_OnlineDOD.Server.Data
 {
     public interface IOnlineDOD
     {

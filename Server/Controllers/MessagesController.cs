@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using BP_OnlineDOD_Server.Data;
-using BP_OnlineDOD_Server.Dtos;
-using BP_OnlineDOD_Shared.Models;
+using BP_OnlineDOD.Server.Data;
+using BP_OnlineDOD.Server.Dtos;
+using BP_OnlineDOD.Shared.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace BP_OnlineDOD_Server.Controllers
+namespace BP_OnlineDOD.Server.Controllers
 {
 
     [Route("api/messages")]

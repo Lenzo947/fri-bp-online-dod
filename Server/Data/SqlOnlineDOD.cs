@@ -1,10 +1,10 @@
-﻿using BP_OnlineDOD_Shared.Models;
+﻿using BP_OnlineDOD.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BP_OnlineDOD_Server.Data
+namespace BP_OnlineDOD.Server.Data
 {
     public class SqlOnlineDOD : IOnlineDOD
     {
