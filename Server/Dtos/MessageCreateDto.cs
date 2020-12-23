@@ -14,7 +14,7 @@ namespace BP_OnlineDOD.Server.Dtos
         [Required]
         public int ThumbsUpCount { get; set; }
 
-        public int ParentMessageId { get; set; }
+        public int? ParentMessageId { get; set; }
 
     }
 }

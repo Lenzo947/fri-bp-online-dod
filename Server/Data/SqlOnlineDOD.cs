@@ -37,12 +37,16 @@ namespace BP_OnlineDOD.Server.Data
 
         public ICollection<Message> GetAllMessages()
         {
-            //return _context.Messages
-            //    .Where(e => e.ParentMessage == null)
-            //    .AsEnumerable()
-            //    .ToList();
+            var result = _context
+                .Messages
+                .Include(m => m.ChildMessages)
+                .ToList();
 
-            return _context.Messages.ToList();
+            return result
+                .Where(e => e.ParentMessageId == null)
+                .ToList();
+
+            //return _context.Messages.ToList(); 
         }
 
         public Message GetMessageById(int id)
