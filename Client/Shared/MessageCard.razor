@@ -38,11 +38,10 @@
 
         @if (edit)
         {
-            newMsg = msg;
             <EditForm Model="newMsg" OnValidSubmit="Edit">
                 <DataAnnotationsValidator />
 
-                <label for="title" class="mt-2">Úprava správy</label>
+                <label for="title" class="mt-4">Úprava správy</label>
 
                 <InputTextArea @bind-Value="newMsg.Text"
                                class="form-control mb-2"
@@ -55,10 +54,8 @@
                     <ValidationSummary />
                 </div>
 
-                <div class="mb-5">
-                    <button type="submit" class="btn btn-primary"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
-                    <button @onclick="ToggleEdit" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
-                </div>
+                <button type="submit" class="btn btn-primary"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+                <button @onclick="ToggleEdit" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
 
             </EditForm>
         }
@@ -68,7 +65,7 @@
             <EditForm Model="newMsg" OnValidSubmit="Reply">
                 <DataAnnotationsValidator />
 
-                <label for="title" class="mt-2">Odpoveď</label>
+                <label for="title" class="mt-4">Odpoveď</label>
 
                 <InputTextArea @bind-Value="newMsg.Text"
                                class="form-control mb-2"
@@ -81,10 +78,8 @@
                     <ValidationSummary />
                 </div>
 
-                <div class="mb-5">
-                    <button type="submit" class="btn btn-primary"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
-                    <button @onclick="ToggleReply" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť správu</button>
-                </div>
+                <button type="submit" class="btn btn-primary"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
+                <button @onclick="ToggleReply" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť správu</button>
             </EditForm>
         }
 
@@ -112,6 +107,10 @@
 
     public void ToggleEdit()
     {
+        newMsg = new Message();
+        newMsg.Text = msg.Text;
+        newMsg.ThumbsUpCount = msg.ThumbsUpCount;
+
         this.edit = !edit;
         this.reply = false;
     }
@@ -119,6 +118,7 @@
     public void ToggleReply()
     {
         newMsg = new Message();
+
         this.reply = !reply;
         this.edit = false;
     }
@@ -137,7 +137,7 @@
 
     public async Task Edit()
     {
-        var response = await httpClient.PutAsJsonAsync("https://localhost:44317/api/messages/" + msg.Id, msg);
+        var response = await httpClient.PutAsJsonAsync("https://localhost:44317/api/messages/" + msg.Id, newMsg);
 
         if (response.IsSuccessStatusCode)
         {
