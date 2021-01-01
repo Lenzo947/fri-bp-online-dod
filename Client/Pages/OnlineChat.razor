@@ -32,7 +32,7 @@
 
 @if (Messages != null) // wait for all messages to load first
 {
-    foreach (Message msg in Messages.Reverse())
+    foreach (Message msg in Messages.Reverse()) 
     {
         <MessageCard msg="@msg" Classes="mb-4"/>  
     }
@@ -51,14 +51,14 @@
 
     protected async Task Load()
     {
-        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("https://localhost:44317/api/messages");
+        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("http://localhost:4080/api/messages");
     }
 
     public async Task Add()
     {
         var payload = new { Text = MessageModel.Text, ThumbsUpCount = new Random().Next(0, 100) };
 
-        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/messages", payload);
+        var response = await httpClient.PostAsJsonAsync("http://localhost:4080/api/messages", payload);
 
         if (response.IsSuccessStatusCode)
         {

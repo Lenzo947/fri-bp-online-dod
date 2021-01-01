@@ -127,7 +127,7 @@
     {
         var payload = new { Text = newMsg.Text, ThumbsUpCount = new Random().Next(0, 100), ParentMessageId = msg.Id };
 
-        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/messages", payload);
+        var response = await httpClient.PostAsJsonAsync("http://localhost:4080/api/messages", payload);
 
         if (response.IsSuccessStatusCode)
         {
@@ -137,7 +137,7 @@
 
     public async Task Edit()
     {
-        var response = await httpClient.PutAsJsonAsync("https://localhost:44317/api/messages/" + msg.Id, newMsg);
+        var response = await httpClient.PutAsJsonAsync("http://localhost:4080/api/messages/" + msg.Id, newMsg);
 
         if (response.IsSuccessStatusCode)
         {
@@ -147,7 +147,7 @@
 
     public async Task Delete() // won't work unless the message has no child messages (TODO: Modify text to a value of "message has been removed")
     {
-        var response = await httpClient.DeleteAsync("https://localhost:44317/api/messages/" + msg.Id);
+        var response = await httpClient.DeleteAsync("http://localhost:4080/api/messages/" + msg.Id);
 
         if (response.IsSuccessStatusCode)
         {

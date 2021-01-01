@@ -1,0 +1,38 @@
+  # Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+version: '3.9'
+
+services:
+  ms-sql-server:
+      container_name: OnlineDOD_SQLServer-2017
+      image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
+      environment:
+        ACCEPT_EULA: "Y"
+        MSSQL_SA_PASSWORD: "FRIUniza1990"
+        MSSQL_PID: Express
+      ports:
+        - "1433:1433"
+  backend:
+    container_name: OnlineDOD_dotNET-Core-3.1-API
+    build:
+      context: .
+      dockerfile: Server/Dockerfile
+    environment:
+      DBServer: "ms-sql-server"
+    restart: on-failure:10
+    depends_on:
+      - ms-sql-server
+    ports:
+      - 4080:80
+      - 4443:443
+  frontend:
+    container_name: OnlineDOD_BlazorWASM
+    build:
+      context: .
+      dockerfile: Client/Dockerfile
+    restart: on-failure:10
+    depends_on:
+      - ms-sql-server
+      - backend
+    ports:
+      - 5080:80
+      - 5443:443
