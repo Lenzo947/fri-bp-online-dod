@@ -1,7 +1,10 @@
 ﻿@page "/"
+@inject IAuthenticationService AuthenticationService
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
 
-<h1>Obsah domovskej stránky</h1>
+<UserStatusMenu />
 
 @code {
-
+  
 }

@@ -14,12 +14,8 @@
 
     <label for="title">Nová správa</label>
 
-    <InputTextArea @bind-Value="MessageModel.Text"
-                    class="form-control mb-2"
-                    id="title"
-                    placeholder="Správa..."
-                    rows="5"
-                    oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+    <InputTextArea @bind-Value="MessageModel.Text" class="form-control mb-2" id="title" placeholder="Správa..." rows="5"
+        oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
 
     <div class="mb-2">
         <ValidationSummary />
@@ -32,14 +28,13 @@
 
 @if (Messages != null) // wait for all messages to load first
 {
-    foreach (Message msg in Messages.Reverse()) 
+    foreach (Message msg in Messages.Reverse())
     {
-        <MessageCard msg="@msg" Classes="mb-4"/>  
+        <MessageCard msg="@msg" Classes="mb-4" />
     }
 }
 
 @code {
-
     protected Message MessageModel { get; set; } = new Message();
 
     public virtual ICollection<Message> Messages { get; set; }
@@ -54,7 +49,7 @@
         Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("http://localhost:4080/api/messages");
     }
 
-    public async Task Add()
+    protected async Task Add()
     {
         var payload = new { Text = MessageModel.Text, ThumbsUpCount = new Random().Next(0, 100) };
 

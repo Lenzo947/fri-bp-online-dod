@@ -6,6 +6,7 @@
     <Company>FRI UNIZA</Company>
     <Description />
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

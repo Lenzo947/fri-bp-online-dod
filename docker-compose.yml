@@ -13,6 +13,7 @@ services:
         - "1433:1433"
   backend:
     container_name: OnlineDOD_dotNET-Core-3.1-API
+    image: fri-bp-online-dod_backend
     build:
       context: .
       dockerfile: Server/Dockerfile
@@ -26,6 +27,7 @@ services:
       - 4443:443
   frontend:
     container_name: OnlineDOD_BlazorWASM
+    image: fri-bp-online-dod_frontend
     build:
       context: .
       dockerfile: Client/Dockerfile

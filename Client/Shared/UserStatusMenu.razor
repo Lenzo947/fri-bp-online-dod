@@ -1,0 +1,29 @@
+﻿@inject IAuthenticationService AuthenticationService
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+
+<div class="alert alert-info">
+    @if (AuthenticationService.User != null)
+    {
+        <span>Prihlásený</span>
+        <div class="btn btn-danger ml-2" @onclick="NavigateToLogout">Odhlásiť</div>
+    }
+    else
+    {
+        <span>Neprihlásený</span>
+        <div class="btn btn-primary ml-2" @onclick="NavigateToLogin">Prihlásiť</div>
+    }
+</div>
+
+@code {
+    private void NavigateToLogout()
+    {
+        NavigationManager.NavigateTo("/logout");
+    }
+
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+}
