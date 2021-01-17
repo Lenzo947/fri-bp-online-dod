@@ -42,8 +42,8 @@ namespace BP_OnlineDOD.Server
             {
                 s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 s.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            });
-
+            }); 
+             
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IOnlineDOD, SqlOnlineDOD>();

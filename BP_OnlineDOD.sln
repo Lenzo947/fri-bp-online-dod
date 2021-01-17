@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BP_OnlineDOD.Client", "Clie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BP_OnlineDOD.Server", "Server\BP_OnlineDOD.Server.csproj", "{36C188E3-3D1A-470E-A025-31FF939067F8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BP_OnlineDOD.Shared", "Shared\BP_OnlineDOD.Shared.csproj", "{6D97911F-1DD7-4050-B11F-AD379EC659A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{36C188E3-3D1A-470E-A025-31FF939067F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36C188E3-3D1A-470E-A025-31FF939067F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36C188E3-3D1A-470E-A025-31FF939067F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D97911F-1DD7-4050-B11F-AD379EC659A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D97911F-1DD7-4050-B11F-AD379EC659A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D97911F-1DD7-4050-B11F-AD379EC659A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D97911F-1DD7-4050-B11F-AD379EC659A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

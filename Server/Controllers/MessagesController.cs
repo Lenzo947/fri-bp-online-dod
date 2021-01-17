@@ -26,6 +26,8 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<MessageReadDto>> GetAllMessages()
         {
+            Serilog.Log.Information("GET /api/messages");
+
             var messageItems = _onlineDOD.GetAllMessages();
 
             return Ok(_mapper.Map<IEnumerable<MessageReadDto>>(messageItems));
@@ -34,7 +36,7 @@ namespace BP_OnlineDOD.Server.Controllers
         //GET api/messages/{id}
         [HttpGet("{id}", Name = "GetMessageById")]
         public ActionResult<MessageReadDto> GetMessageById(int id)
-        {
+        { 
             var messageItem = _onlineDOD.GetMessageById(id);
             if (messageItem != null)
             {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace BP_OnlineDOD_Server.Migrations
+namespace BP_OnlineDOD.Server.Migrations
 {
     [DbContext(typeof(OnlineDODContext))]
     partial class OnlineDODContextModelSnapshot : ModelSnapshot
@@ -19,7 +19,7 @@ namespace BP_OnlineDOD_Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BP_OnlineDOD_Server.Models.Message", b =>
+            modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,27 +46,9 @@ namespace BP_OnlineDOD_Server.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("BP_OnlineDOD_Server.Models.User", b =>
+            modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Message", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("BP_OnlineDOD_Server.Models.Message", b =>
-                {
-                    b.HasOne("BP_OnlineDOD_Server.Models.Message", "ParentMessage")
+                    b.HasOne("BP_OnlineDOD.Shared.Models.Message", "ParentMessage")
                         .WithMany("ChildMessages")
                         .HasForeignKey("ParentMessageId");
                 });

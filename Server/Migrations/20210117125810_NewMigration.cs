@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BP_OnlineDOD_Server.Migrations
+namespace BP_OnlineDOD.Server.Migrations
 {
     public partial class NewMigration : Migration
     {
@@ -29,20 +29,6 @@ namespace BP_OnlineDOD_Server.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FullName = table.Column<string>(nullable: true),
-                    Role = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_ParentMessageId",
                 table: "Messages",
@@ -53,9 +39,6 @@ namespace BP_OnlineDOD_Server.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Messages");
-
-            migrationBuilder.DropTable(
-                name: "Users");
         }
     }
 }
