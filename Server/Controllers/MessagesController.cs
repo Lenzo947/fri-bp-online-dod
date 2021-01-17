@@ -26,17 +26,19 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<MessageReadDto>> GetAllMessages()
         {
-            Serilog.Log.Information("GET /api/messages");
+            //Serilog.Log.Information("GET /api/messages");
 
             var messageItems = _onlineDOD.GetAllMessages();
 
-            return Ok(_mapper.Map<IEnumerable<MessageReadDto>>(messageItems));
+            return Ok(_mapper.Map<IEnumerable<MessageReadDto>>(messageItems)); 
         }
 
         //GET api/messages/{id}
         [HttpGet("{id}", Name = "GetMessageById")]
         public ActionResult<MessageReadDto> GetMessageById(int id)
-        { 
+        {
+            //Serilog.Log.Information($"GET /api/messages/{id}");
+
             var messageItem = _onlineDOD.GetMessageById(id);
             if (messageItem != null)
             {
@@ -56,6 +58,8 @@ namespace BP_OnlineDOD.Server.Controllers
 
             var messageReadDto = _mapper.Map<MessageReadDto>(messageModel);
 
+            Serilog.Log.Information($"POST /api/messages -> ID - {messageReadDto.Id}");
+
             return CreatedAtRoute(nameof(GetMessageById), new { Id = messageReadDto.Id }, messageReadDto);
         }
 
@@ -63,6 +67,8 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPut("{id}")]
         public ActionResult UpdateMessage(int id, MessageUpdateDto messageUpdateDto)
         {
+            Serilog.Log.Information($"PUT /api/messages/{id}");
+
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
             {
@@ -81,6 +87,8 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPatch("{id}")]
         public ActionResult PartialMessageUpdate(int id, JsonPatchDocument<MessageUpdateDto> patchDoc)
         {
+            Serilog.Log.Information($"PATCH /api/messages/{id}");
+
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
             {
@@ -107,6 +115,8 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteMessage(int id)
         {
+            Serilog.Log.Information($"DELETE /api/messages/{id}");
+
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
             {

@@ -35,6 +35,11 @@ namespace BP_OnlineDOD.Server.Data
             _context.Messages.Remove(msg);
         }
 
+        public ICollection<Log> GetAllLogs()
+        {
+            return _context.Logs.ToList();
+        }
+
         public ICollection<Message> GetAllMessages()
         {
             var result = _context

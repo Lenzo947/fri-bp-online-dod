@@ -1,0 +1,57 @@
+﻿@page "/server-logs"
+@attribute [Authorize]
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<h1>Logy udalostí</h1>
+
+<div class="btn btn-info mt-2" @onclick="NavigateToHome">Naspäť</div>
+
+@if (Logs != null) // wait for all messages to load first
+{
+    <table class="table table-sm table-hover table-bordered table-responsive my-5">
+        <thead class="thead-light text-center">
+            <tr>
+                <th scope="col" class="align-middle">Správa</th>
+                <th scope="col" class="align-middle">Úroveň</th>
+                <th scope="col" class="align-middle">Lokálny čas</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            @foreach (Log log in Logs.Reverse())
+            {
+                <tr>
+                    <td class="text-left">@log.Message</td>
+                    <td>@log.Level</td>
+                    <td>@log.TimeStamp.ToString("dd.MM. yyyy HH:mm:ss")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <SpinnerBig Classes="text-info mb-4" />
+}
+
+
+
+@code {
+
+    public virtual ICollection<Log> Logs { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
+
+    protected async Task Load()
+    {
+        Logs = await httpClient.GetFromJsonAsync<ICollection<Log>>("https://localhost:44317/api/logs");
+    }
+
+    private void NavigateToHome()
+    {
+        navigationManager.NavigateTo("");
+    }
+}

@@ -7383,3 +7383,7 @@ body {
 
 textarea {
   resize: none; }
+
+.spinner-big {
+  width: 3rem;
+  height: 3rem; }

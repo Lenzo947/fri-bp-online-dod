@@ -12,6 +12,8 @@ namespace BP_OnlineDOD.Server.Data
 
         public DbSet<Message> Messages { get; set; }
 
+        public DbSet<Log> Logs { get; set; }
+
         //public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,6 +21,8 @@ namespace BP_OnlineDOD.Server.Data
             modelBuilder.Entity<Message>()
                 .HasMany(m => m.ChildMessages)
                 .WithOne(c => c.ParentMessage);
+
+            modelBuilder.Entity<Log>().ToTable("Logs");
         }
 
     }

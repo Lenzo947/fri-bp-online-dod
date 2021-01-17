@@ -15,7 +15,7 @@
     <label for="title">Nová správa</label>
 
     <InputTextArea @bind-Value="MessageModel.Text" class="form-control mb-2" id="title" placeholder="Správa..." rows="5"
-        oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+                   oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
 
     <div class="mb-2">
         <ValidationSummary />
@@ -33,6 +33,10 @@
         <MessageCard msg="@msg" Classes="mb-4" />
     }
 }
+else
+{
+    <SpinnerBig Classes="text-primary mb-4"/>
+}
 
 @code {
     protected Message MessageModel { get; set; } = new Message();
@@ -46,14 +50,14 @@
 
     protected async Task Load()
     {
-        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("http://localhost:4080/api/messages");
+        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("https://localhost:44317/api/messages");
     }
 
     protected async Task Add()
     {
         var payload = new { Text = MessageModel.Text, ThumbsUpCount = new Random().Next(0, 100) };
 
-        var response = await httpClient.PostAsJsonAsync("http://localhost:4080/api/messages", payload);
+        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/messages", payload);
 
         if (response.IsSuccessStatusCode)
         {

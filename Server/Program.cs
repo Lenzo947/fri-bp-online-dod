@@ -20,20 +20,19 @@ namespace BP_OnlineDOD.Server
             var logDB = "Data Source=localhost,1433;Initial Catalog=OnlineDOD_DB;User Id=SA; Password=FRIUniza1990;";
             var sinkOpts = new MSSqlServerSinkOptions();
             sinkOpts.TableName = "Logs";
-            sinkOpts.AutoCreateSqlTable = true;
-            var columnOpts = new ColumnOptions();
-            columnOpts.Store.Remove(StandardColumn.Properties);
-            columnOpts.Store.Add(StandardColumn.LogEvent);
-            columnOpts.LogEvent.DataLength = 2048;
+            //sinkOpts.AutoCreateSqlTable = true;
+            //var columnOpts = new ColumnOptions();
+            //columnOpts.Store.Remove(StandardColumn.Properties);
+            //columnOpts.Store.Add(StandardColumn.LogEvent);
+            //columnOpts.LogEvent.DataLength = 2048;
             //columnOpts.PrimaryKey = options.TimeStamp;
-            columnOpts.TimeStamp.NonClusteredIndex = true;
+            //columnOpts.TimeStamp.NonClusteredIndex = true;
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)
                 .WriteTo.MSSqlServer(
                     connectionString: logDB,
-                    sinkOptions: sinkOpts,
-                    columnOptions: columnOpts)
+                    sinkOptions: sinkOpts)
                 .CreateLogger();
 
             //Log.Warning("Dolezity vypis");

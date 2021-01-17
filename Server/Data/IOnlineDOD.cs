@@ -8,6 +8,7 @@ namespace BP_OnlineDOD.Server.Data
     {
         bool SaveChanges();
 
+        ICollection<Log> GetAllLogs();
 
         ICollection<Message> GetAllMessages();
 
