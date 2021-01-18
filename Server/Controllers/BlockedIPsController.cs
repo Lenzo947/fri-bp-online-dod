@@ -66,7 +66,6 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteBlockedIP(int id)
         {
-            Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/blocked-ips/{id}");
 
             var blockedIPModel = _onlineDOD.GetBlockedIPById(id);
             if (blockedIPModel == null)
@@ -76,6 +75,8 @@ namespace BP_OnlineDOD.Server.Controllers
 
             _onlineDOD.DeleteBlockedIP(blockedIPModel);
             _onlineDOD.SaveChanges();
+
+            Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/blocked-ips/{id}");
 
             return NoContent();
         }

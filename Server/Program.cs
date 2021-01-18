@@ -29,7 +29,7 @@ namespace BP_OnlineDOD.Server
             //columnOpts.TimeStamp.NonClusteredIndex = true;
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Error)
+                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Fatal)
                 .WriteTo.MSSqlServer(
                     connectionString: logDB,
                     sinkOptions: sinkOpts)

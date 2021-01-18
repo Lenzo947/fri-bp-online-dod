@@ -67,7 +67,6 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPut("{id}")]
         public ActionResult UpdateMessage(int id, MessageUpdateDto messageUpdateDto)
         {
-            Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
 
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
@@ -80,6 +79,8 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.UpdateMessage(messageModel);
             _onlineDOD.SaveChanges();
 
+            Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
+
             return NoContent();
         }
 
@@ -87,7 +88,6 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPatch("{id}")]
         public ActionResult PartialMessageUpdate(int id, JsonPatchDocument<MessageUpdateDto> patchDoc)
         {
-            Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
 
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
@@ -108,6 +108,8 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.UpdateMessage(messageModel);
             _onlineDOD.SaveChanges();
 
+            Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
+
             return NoContent();
         }
 
@@ -115,7 +117,6 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteMessage(int id)
         {
-            Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
 
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
@@ -125,6 +126,8 @@ namespace BP_OnlineDOD.Server.Controllers
 
             _onlineDOD.DeleteMessage(messageModel);
             _onlineDOD.SaveChanges();
+
+            Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
 
             return NoContent();
         }
