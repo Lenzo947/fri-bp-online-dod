@@ -1,5 +1,6 @@
 ﻿@inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@inject IAuthenticationService AuthenticationService
 
 <div class="card @this.Classes">
     <div class="card-body p-3">
@@ -17,15 +18,18 @@
 
             <div class="badge badge-secondary px-2 py-1">@msg.TimeSent.ToLocalTime().ToString("dd.MM. yyyy HH:mm:ss")</div>
 
-            <div class="float-right">
-                @if (!edit)
-                {
-                    <button @onclick="ToggleEdit" type="button" class="btn btn-sm btn-outline-primary"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
-                }
-                
-                <button @onclick="Delete" type="button" class="btn btn-sm btn-outline-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
+            @if (AuthenticationService.User != null) // check if user is logged in 
+            { 
+                <div class="float-right">
+                    @if (!edit)
+                    {
+                        <button @onclick="ToggleEdit" type="button" class="btn btn-sm btn-outline-primary"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+                    }
+
+                    <button @onclick="Delete" type="button" class="btn btn-sm btn-outline-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
+                </div>
+            }
             </div>
-        </div>
 
         <div class="clearfix">
             <p class="card-text px-2 pt-2 pl-2">@msg.Text</p>

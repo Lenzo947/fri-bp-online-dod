@@ -22,7 +22,7 @@ namespace BP_OnlineDOD.Server.Controllers
             _mapper = mapper;
         }
 
-        //GET api/messages
+        //GET api/logs
         [HttpGet]
         public ActionResult<IEnumerable<LogReadDto>> GetAllLogs()
         {

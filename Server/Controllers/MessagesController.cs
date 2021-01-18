@@ -58,7 +58,7 @@ namespace BP_OnlineDOD.Server.Controllers
 
             var messageReadDto = _mapper.Map<MessageReadDto>(messageModel);
 
-            Serilog.Log.Information($"POST /api/messages -> ID - {messageReadDto.Id}");
+            Serilog.Log.Information($"[{this.Request.Host.Host}] POST /api/messages -> ID - {messageReadDto.Id}");
 
             return CreatedAtRoute(nameof(GetMessageById), new { Id = messageReadDto.Id }, messageReadDto);
         }
@@ -67,7 +67,7 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPut("{id}")]
         public ActionResult UpdateMessage(int id, MessageUpdateDto messageUpdateDto)
         {
-            Serilog.Log.Information($"PUT /api/messages/{id}");
+            Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
 
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
@@ -87,7 +87,7 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPatch("{id}")]
         public ActionResult PartialMessageUpdate(int id, JsonPatchDocument<MessageUpdateDto> patchDoc)
         {
-            Serilog.Log.Information($"PATCH /api/messages/{id}");
+            Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
 
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
@@ -115,7 +115,7 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteMessage(int id)
         {
-            Serilog.Log.Information($"DELETE /api/messages/{id}");
+            Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
 
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)

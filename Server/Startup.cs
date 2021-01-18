@@ -47,7 +47,7 @@ namespace BP_OnlineDOD.Server
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IOnlineDOD, SqlOnlineDOD>();
-
+            
             services.AddCors(setup =>
             {
             setup.AddPolicy("AllowBlazorWasm", policy =>

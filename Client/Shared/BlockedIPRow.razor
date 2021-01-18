@@ -1,0 +1,24 @@
+﻿@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<tr>
+    <td class="text-left align-middle">@ip.Address</td>
+    <td><button @onclick="Delete" type="button" class="btn btn-sm btn-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button></td>
+</tr>
+
+@code {
+
+    [Parameter]
+    public BlockedIP ip { get; set; }
+
+    public async Task Delete()
+    {
+        var response = await httpClient.DeleteAsync("https://localhost:44317/api/blocked-ips/" + ip.Id);
+
+        if (response.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo("ip-management", true);
+        }
+    }
+
+}

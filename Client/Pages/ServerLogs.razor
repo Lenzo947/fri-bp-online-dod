@@ -3,9 +3,9 @@
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
-<h1>Logy udalostí</h1>
+<div class="btn btn-info mb-4" @onclick="NavigateToHome">Naspäť</div>
 
-<div class="btn btn-info mt-2" @onclick="NavigateToHome">Naspäť</div>
+<h1>Logy udalostí</h1>
 
 @if (Logs != null) // wait for all messages to load first
 {
@@ -21,9 +21,9 @@
             @foreach (Log log in Logs.Reverse())
             {
                 <tr>
-                    <td class="text-left">@log.Message</td>
-                    <td>@log.Level</td>
-                    <td>@log.TimeStamp.ToString("dd.MM. yyyy HH:mm:ss")</td>
+                    <td class="text-left align-middle">@log.Message</td>
+                    <td class="align-middle">@log.Level</td>
+                    <td class="align-middle">@log.TimeStamp.ToString("dd.MM. yyyy HH:mm:ss")</td>
                 </tr>
             }
         </tbody>

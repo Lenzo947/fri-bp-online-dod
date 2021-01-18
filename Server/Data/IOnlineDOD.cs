@@ -10,6 +10,14 @@ namespace BP_OnlineDOD.Server.Data
 
         ICollection<Log> GetAllLogs();
 
+        ICollection<BlockedIP> GetAllBlockedIPs();
+
+        BlockedIP GetBlockedIPById(int id);
+
+        void CreateBlockedIP(BlockedIP ip);
+
+        void DeleteBlockedIP(BlockedIP ip);
+
         ICollection<Message> GetAllMessages();
 
         Message GetMessageById(int id);

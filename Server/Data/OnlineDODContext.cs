@@ -14,6 +14,8 @@ namespace BP_OnlineDOD.Server.Data
 
         public DbSet<Log> Logs { get; set; }
 
+        public DbSet<BlockedIP> BlockedIPs { get; set; }
+
         //public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
