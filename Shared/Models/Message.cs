@@ -11,6 +11,8 @@ namespace BP_OnlineDOD.Shared.Models
         public int Id { get; set; }
 
         [Required]
+        [StringLength(10000, ErrorMessage = "Správa presahuje povolený počet znakov! (10000)")]
+        [MinLength(5, ErrorMessage = "Správa musí obsahovať aspoň 5 znakov!")]
         public string Text { get; set; }
 
         [Required]

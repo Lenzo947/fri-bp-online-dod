@@ -11,6 +11,7 @@ namespace BP_OnlineDOD.Shared.Models
         public int Id { get; set; }
 
         [Required]
+        [MinLength(6, ErrorMessage = "IP adresa musí obsahovať aspoň 6 znakov!")]
         public string Address { get; set; }
     }
 }

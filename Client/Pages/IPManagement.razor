@@ -17,11 +17,9 @@
     <InputText @bind-Value="BlockedIPModel.Address" class="form-control mb-2" id="title" placeholder="Adresa..." rows="1"
                    oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputText>
 
-    <div class="mb-2">
-        <ValidationSummary />
-    </div>
+    <ValidationMessage For="@(() => BlockedIPModel.Address)" />
 
-    <div class="mb-5">
+    <div class="mb-5 mt-2">
         <button type="submit" class="btn btn-primary"><span class="oi oi-plus mr-2"></span>Pridať</button>
     </div>
 </EditForm>

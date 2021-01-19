@@ -42,26 +42,24 @@
 
         @if (edit)
         {
-            <EditForm Model="newMsg" OnValidSubmit="Edit">
-                <DataAnnotationsValidator />
+    <EditForm Model="newMsg" OnValidSubmit="Edit">
+        <DataAnnotationsValidator />
 
-                <label for="title" class="mt-4">Úprava správy</label>
+        <label for="title" class="mt-4">Úprava správy</label>
 
-                <InputTextArea @bind-Value="newMsg.Text"
-                               class="form-control mb-2"
-                               id="title"
-                               placeholder="Správa..."
-                               rows="5"
-                               oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+        <InputTextArea @bind-Value="newMsg.Text"
+                       class="form-control mb-2"
+                       id="title"
+                       placeholder="Správa..."
+                       rows="5"
+                       oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
 
-                <div class="mb-2">
-                    <ValidationSummary />
-                </div>
+        <ValidationMessage For="@(() => newMsg.Text)" />
 
-                <button type="submit" class="btn btn-primary"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
-                <button @onclick="ToggleEdit" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
+        <button type="submit" class="btn btn-primary mt-2"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+        <button @onclick="ToggleEdit" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
 
-            </EditForm>
+    </EditForm>
         }
 
         @if (reply)
@@ -78,11 +76,9 @@
                                rows="5"
                                oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
 
-                <div class="mb-2">
-                    <ValidationSummary />
-                </div>
+                <ValidationMessage For="@(() => newMsg.Text)" />
 
-                <button type="submit" class="btn btn-primary"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
+                <button type="submit" class="btn btn-primary mt-2"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
                 <button @onclick="ToggleReply" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť správu</button>
             </EditForm>
         }

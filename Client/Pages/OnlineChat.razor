@@ -16,12 +16,9 @@
 
     <InputTextArea @bind-Value="MessageModel.Text" class="form-control mb-2" id="title" placeholder="Správa..." rows="5"
                    oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+    <ValidationMessage For="@(() => MessageModel.Text)" />
 
-    <div class="mb-2">
-        <ValidationSummary />
-    </div>
-
-    <div class="mb-5">
+    <div class="mb-5 mt-2">
         <button type="submit" class="btn btn-primary"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
     </div>
 </EditForm>
