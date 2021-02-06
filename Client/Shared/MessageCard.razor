@@ -148,20 +148,25 @@
 
         if (response.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo("online-chat", true);
+            reply = false;
+
+            Message result = await response.Content.ReadFromJsonAsync<Message>();
+
+            msg.ChildMessages.Add(result);
+
+            StateHasChanged();
         }
     }
 
     public async Task Edit()
     {
-        var response = await httpClient.PutAsJsonAsync("api/messages/" + msg.Id, newMsg);
+        var response = await httpClient.PutAsJsonAsync($"api/messages/{msg.Id}", newMsg);
 
         if (response.IsSuccessStatusCode)
         {
             msg.Text = newMsg.Text;
 
             edit = false;
-            //navigationManager.NavigateTo("online-chat", true);
         }
     }
 
@@ -171,15 +176,13 @@
 
         StringContent payload = changes.ToPatchJsonContent();
 
-        Console.WriteLine(payload.ToString());
-
         var response = await httpClient.PatchAsync($"api/messages/{msg.Id}", payload);
-
-        //var response = await httpClient.DeleteAsync("api/messages/" + msg.Id);
 
         if (response.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo("online-chat", true);
+            msg.Deleted = true;
+
+            StateHasChanged();
         }
     }
 
