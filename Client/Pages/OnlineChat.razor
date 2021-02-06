@@ -27,7 +27,10 @@
 {
     foreach (Message msg in Messages.Reverse())
     {
-        <MessageCard msg="@msg" Classes="mb-4" />
+        if (msg.ParentMessageId == null)
+        {
+            <MessageCard msg="@msg" Classes="mb-4" />
+        }
     }
 }
 else
@@ -37,18 +40,39 @@ else
 
 @code {
 
+    private Timer _timer { get; set; }
+
     protected Message MessageModel { get; set; } = new Message();
 
-    public virtual ICollection<Message> Messages { get; set; }
+    public virtual IEnumerable<Message> Messages { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await Load();
+
+        _timer = new Timer(5000);
+        _timer.Elapsed += async (s, e) =>
+        {
+            await InvokeAsync(Load);
+        };
+        _timer.Enabled = true;
+
     }
 
     protected async Task Load()
     {
-        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
+        var _messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
+
+        if (Messages != null)
+        {
+            Messages = Messages.Union(_messages, new MessageComparer()).ToList();
+
+            StateHasChanged();
+        }
+        else
+        {
+            Messages = _messages;
+        }
     }
 
     protected async Task Add()
@@ -69,4 +93,5 @@ else
     {
         MessageModel.Text = null;
     }
+
 }

@@ -71,9 +71,7 @@ namespace BP_OnlineDOD.Server.Data
                 .Include(m => m.ChildMessages)
                 .ToList();
 
-            return result
-                .Where(e => e.ParentMessageId == null)
-                .ToList();
+            return result;
 
             //return _context.Messages.ToList();
         }
