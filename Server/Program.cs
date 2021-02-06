@@ -17,7 +17,18 @@ namespace BP_OnlineDOD.Server
 
         public static void Main(string[] args)
         {
-            var logDB = "Data Source=localhost,1433;Initial Catalog=OnlineDOD_DB;User Id=SA; Password=FRIUniza1990;";
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddCommandLine(args)
+                .Build();
+
+            var server = config["DB:Address"];
+            var port = config["DB:Port"];
+            var user = config["DB:Username"];
+            var password = config["DB:Password"];
+            var database = config["DB:Database"];
+
             var sinkOpts = new MSSqlServerSinkOptions();
             sinkOpts.TableName = "Logs";
             //sinkOpts.AutoCreateSqlTable = true;
@@ -31,7 +42,7 @@ namespace BP_OnlineDOD.Server
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Fatal)
                 .WriteTo.MSSqlServer(
-                    connectionString: logDB,
+                    connectionString: $"Data Source={server},{port};Initial Catalog={database};User Id={user}; Password={password};",
                     sinkOptions: sinkOpts)
                 .CreateLogger();
 

@@ -47,7 +47,7 @@ else
 
     protected async Task Load()
     {
-        Logs = await httpClient.GetFromJsonAsync<ICollection<Log>>("https://localhost:44317/api/logs");
+        Logs = await httpClient.GetFromJsonAsync<ICollection<Log>>("api/logs");
     }
 
     private void NavigateToHome()

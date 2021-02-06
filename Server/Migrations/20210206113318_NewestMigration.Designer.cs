@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BP_OnlineDOD.Server.Migrations
 {
     [DbContext(typeof(OnlineDODContext))]
-    [Migration("20210118133353_NewestMigration")]
+    [Migration("20210206113318_NewestMigration")]
     partial class NewestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,12 +77,16 @@ namespace BP_OnlineDOD.Server.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("ParentMessageId")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(10000);
 
                     b.Property<int>("ThumbsUpCount")
                         .HasColumnType("int");

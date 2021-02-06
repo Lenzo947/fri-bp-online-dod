@@ -14,5 +14,8 @@ namespace BP_OnlineDOD.Server.Dtos
         [Required]
         public int ThumbsUpCount { get; set; }
 
+        [Required]
+        public bool Deleted { get; set; }
+
     }
 }

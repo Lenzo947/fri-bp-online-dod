@@ -1,33 +1,14 @@
-﻿@inject IAuthenticationService AuthenticationService
-@inject NavigationManager NavigationManager
+﻿@inject NavigationManager NavigationManager
 
 
 <div class="alert alert-info">
-    @if (AuthenticationService.User != null)
-    {
-        <p>Prihlásený užívateľ: @AuthenticationService.User.Username</p>
-        <div class="btn btn-danger" @onclick="NavigateToLogout">Odhlásiť</div>
-        <div class="btn btn-info ml-2" @onclick="NavigateToLogs">Logy</div>
-        <div class="btn btn-warning ml-2" @onclick="NavigateToIPManagement">Správa IP adries</div>
-    }
-    else
-    {
-        <span>Neprihlásený</span>
-        <div class="btn btn-primary ml-2" @onclick="NavigateToLogin">Prihlásiť</div>
-    }
+
+    <div class="btn btn-info ml-2" @onclick="NavigateToLogs">Logy</div>
+    <div class="btn btn-warning ml-2" @onclick="NavigateToIPManagement">Správa IP adries</div>
+
 </div>
 
 @code {
-    private void NavigateToLogin()
-    {
-        NavigationManager.NavigateTo("/login");
-    }
-
-    private void NavigateToLogout()
-    {
-        NavigationManager.NavigateTo("/logout");
-    }
-
     private void NavigateToLogs()
     {
         NavigationManager.NavigateTo("/server-logs");

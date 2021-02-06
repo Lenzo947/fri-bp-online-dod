@@ -61,14 +61,14 @@ else
 
     protected async Task Load()
     {
-        BlockedIPs = await httpClient.GetFromJsonAsync<ICollection<BlockedIP>>("https://localhost:44317/api/blocked-ips");
+        BlockedIPs = await httpClient.GetFromJsonAsync<ICollection<BlockedIP>>("api/blocked-ips");
     }
 
     protected async Task Add()
     {
         var payload = new { Address = BlockedIPModel.Address };
 
-        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/blocked-ips", payload);
+        var response = await httpClient.PostAsJsonAsync("api/blocked-ips", payload);
 
         if (response.IsSuccessStatusCode)
         {

@@ -13,7 +13,7 @@
 
     public async Task Delete()
     {
-        var response = await httpClient.DeleteAsync("https://localhost:44317/api/blocked-ips/" + ip.Id);
+        var response = await httpClient.DeleteAsync("api/blocked-ips/" + ip.Id);
 
         if (response.IsSuccessStatusCode)
         {

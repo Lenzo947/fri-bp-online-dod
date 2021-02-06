@@ -29,11 +29,11 @@ namespace BP_OnlineDOD.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var server = Configuration["DBServer"] ?? "localhost";
-            var port = Configuration["DBPort"] ?? "1433";
-            var user = Configuration["DBUser"] ?? "SA";
-            var password = Configuration["DBPassword"] ?? "FRIUniza1990";
-            var database = Configuration["Database"] ?? "OnlineDOD_DB";
+            var server = Configuration["DB:Address"];
+            var port = Configuration["DB:Port"];
+            var user = Configuration["DB:Username"];
+            var password = Configuration["DB:Password"];
+            var database = Configuration["DB:Database"];
 
             services.AddDbContext<OnlineDODContext>(opt => opt.UseSqlServer
                 ($"Server={server},{port};Initial Catalog={database};User ID ={user};Password={password}"));

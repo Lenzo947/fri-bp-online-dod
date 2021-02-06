@@ -47,14 +47,14 @@ else
 
     protected async Task Load()
     {
-        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("https://localhost:44317/api/messages");
+        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
     }
 
     protected async Task Add()
     {
-        var payload = new { Text = MessageModel.Text, ThumbsUpCount = new Random().Next(0, 100) };
+        var payload = new { Text = MessageModel.Text };
 
-        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/messages", payload);
+        var response = await httpClient.PostAsJsonAsync("api/messages", payload);
 
         if (response.IsSuccessStatusCode)
         {

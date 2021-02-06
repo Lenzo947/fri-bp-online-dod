@@ -21,6 +21,9 @@ namespace BP_OnlineDOD.Shared.Models
         [Required]
         public DateTime TimeSent { get; set; }
 
+        [Required]
+        public bool Deleted { get; set; }
+
 
         public int? ParentMessageId { get; set; }
 

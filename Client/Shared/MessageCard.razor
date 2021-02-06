@@ -1,25 +1,30 @@
 ﻿@inject HttpClient httpClient
 @inject NavigationManager navigationManager
-@inject IAuthenticationService AuthenticationService
 
 <div class="card @this.Classes">
     <div class="card-body p-3">
 
-        <h5 class="card-title">
-            Anonym
-        </h5>
 
-        <div class="card-subtitle mb-2">
+        @if (msg.Deleted)
+        {
+            <h5 class="card-title text-muted">Neznámy</h5>
+        }
+        else
+        {
+            <h5 class="card-title">Anonym</h5>
+        }
 
-            <div class="badge badge-primary px-2 py-1">
-                <span class="oi oi-thumb-up"></span>
-                @msg.ThumbsUpCount
-            </div>
+    <div class="card-subtitle mb-2">
 
-            <div class="badge badge-secondary px-2 py-1">@msg.TimeSent.ToLocalTime().ToString("dd.MM. yyyy HH:mm:ss")</div>
+            @if (!msg.Deleted)
+            {
+                <div class="badge badge-primary px-2 py-1">
+                    <span class="oi oi-thumb-up"></span>
+                    @msg.ThumbsUpCount
+                </div>
 
-            @if (AuthenticationService.User != null) // check if user is logged in 
-            { 
+                <div class="badge badge-secondary px-2 py-1">@msg.TimeSent.ToLocalTime().ToString("dd.MM. yyyy HH:mm:ss")</div>
+
                 <div class="float-right">
                     @if (!edit)
                     {
@@ -29,37 +34,45 @@
                     <button @onclick="Delete" type="button" class="btn btn-sm btn-outline-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
                 </div>
             }
-            </div>
+        </div>
 
         <div class="clearfix">
-            <p class="card-text px-2 pt-2 pl-2">@msg.Text</p>
-            @if (!reply)
+            @if (msg.Deleted)
             {
-                <button @onclick="ToggleReply" type="button" class="btn btn-sm btn-primary float-right">Odpovedať</button>
+                <p class="card-text text-muted px-2 pt-2 pl-2">Správa bola zmazaná, odpovede sú skryté</p>
+            }
+            else
+            {
+                <p class="card-text px-2 pt-2 pl-2">@msg.Text</p>
+
+                if (!reply)
+                {
+                    <button @onclick="ToggleReply" type="button" class="btn btn-sm btn-primary float-right">Odpovedať</button>
+                }
             }
 
         </div>
 
         @if (edit)
         {
-    <EditForm Model="newMsg" OnValidSubmit="Edit">
-        <DataAnnotationsValidator />
+            <EditForm Model="newMsg" OnValidSubmit="Edit">
+                <DataAnnotationsValidator />
 
-        <label for="title" class="mt-4">Úprava správy</label>
+                <label for="title" class="mt-4">Úprava správy</label>
 
-        <InputTextArea @bind-Value="newMsg.Text"
-                       class="form-control mb-2"
-                       id="title"
-                       placeholder="Správa..."
-                       rows="5"
-                       oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
+                <InputTextArea @bind-Value="newMsg.Text"
+                               class="form-control mb-2"
+                               id="title"
+                               placeholder="Správa..."
+                               rows="5"
+                               oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
 
-        <ValidationMessage For="@(() => newMsg.Text)" />
+                <ValidationMessage For="@(() => newMsg.Text)" />
 
-        <button type="submit" class="btn btn-primary mt-2"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
-        <button @onclick="ToggleEdit" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
+                <button type="submit" class="btn btn-primary mt-2"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+                <button @onclick="ToggleEdit" type="button" class="btn btn-primary float-right"><span class="oi oi-x mr-2"></span>Zrušiť úpravy</button>
 
-    </EditForm>
+            </EditForm>
         }
 
         @if (reply)
@@ -83,9 +96,12 @@
             </EditForm>
         }
 
-        @foreach (Message child in this.msg.ChildMessages)
+        @if (!msg.Deleted)
         {
-            <MessageCard msg="@child" Classes="mt-4" />
+            foreach (Message child in this.msg.ChildMessages)
+            {
+                <MessageCard msg="@child" Classes="mt-4" />
+            }
         }
     </div>
 </div>
@@ -110,6 +126,7 @@
         newMsg = new Message();
         newMsg.Text = msg.Text;
         newMsg.ThumbsUpCount = msg.ThumbsUpCount;
+        newMsg.Deleted = false;
 
         this.edit = !edit;
         this.reply = false;
@@ -125,9 +142,9 @@
 
     public async Task Reply()
     {
-        var payload = new { Text = newMsg.Text, ThumbsUpCount = new Random().Next(0, 100), ParentMessageId = msg.Id };
+        var payload = new { Text = newMsg.Text, ParentMessageId = msg.Id };
 
-        var response = await httpClient.PostAsJsonAsync("https://localhost:44317/api/messages", payload);
+        var response = await httpClient.PostAsJsonAsync("api/messages", payload);
 
         if (response.IsSuccessStatusCode)
         {
@@ -137,17 +154,28 @@
 
     public async Task Edit()
     {
-        var response = await httpClient.PutAsJsonAsync("https://localhost:44317/api/messages/" + msg.Id, newMsg);
+        var response = await httpClient.PutAsJsonAsync("api/messages/" + msg.Id, newMsg);
 
         if (response.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo("online-chat", true);
+            msg.Text = newMsg.Text;
+
+            edit = false;
+            //navigationManager.NavigateTo("online-chat", true);
         }
     }
 
-    public async Task Delete() // won't work unless the message has no child messages (TODO: Modify text to a value of "message has been removed")
+    public async Task Delete()
     {
-        var response = await httpClient.DeleteAsync("https://localhost:44317/api/messages/" + msg.Id);
+        var changes = new { Deleted = true };
+
+        StringContent payload = changes.ToPatchJsonContent();
+
+        Console.WriteLine(payload.ToString());
+
+        var response = await httpClient.PatchAsync($"api/messages/{msg.Id}", payload);
+
+        //var response = await httpClient.DeleteAsync("api/messages/" + msg.Id);
 
         if (response.IsSuccessStatusCode)
         {

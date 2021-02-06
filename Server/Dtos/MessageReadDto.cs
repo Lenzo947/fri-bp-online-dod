@@ -14,6 +14,8 @@ namespace BP_OnlineDOD.Server.Dtos
 
         public int ThumbsUpCount { get; set; }
 
+        public bool Deleted { get; set; }
+
         public int? ParentMessageId { get; set; }
 
         public DateTime TimeSent { get; set; }

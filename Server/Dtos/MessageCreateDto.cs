@@ -14,7 +14,16 @@ namespace BP_OnlineDOD.Server.Dtos
         [Required]
         public int ThumbsUpCount { get; set; }
 
+        [Required]
+        public bool Deleted { get; set; }
+
         public int? ParentMessageId { get; set; }
+
+        public MessageCreateDto()
+        {
+            this.Deleted = false;
+            this.ThumbsUpCount = new Random().Next(0, 100);
+        }
 
     }
 }

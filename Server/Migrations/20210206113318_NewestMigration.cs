@@ -45,9 +45,10 @@ namespace BP_OnlineDOD.Server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Text = table.Column<string>(nullable: false),
+                    Text = table.Column<string>(maxLength: 10000, nullable: false),
                     ThumbsUpCount = table.Column<int>(nullable: false),
                     TimeSent = table.Column<DateTime>(nullable: false),
+                    Deleted = table.Column<bool>(nullable: false),
                     ParentMessageId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
