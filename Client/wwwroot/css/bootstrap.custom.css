@@ -7390,3 +7390,27 @@ textarea {
 
 .p70 {
   width: 70%; }
+
+.cursor-pointer {
+  cursor: pointer; }
+
+.label {
+  display: inline;
+  padding: .3em .8em;
+  font-size: 75%;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25em; }
+
+.label-primary {
+  background-color: #337ab7; }
+
+.label-primary:hover {
+  background-color: #27608c; }
+
+.label-default {
+  background-color: #777; }

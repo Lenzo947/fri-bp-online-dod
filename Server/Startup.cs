@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,9 +20,15 @@ namespace BP_OnlineDOD.Server
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            builder.AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -47,14 +53,9 @@ namespace BP_OnlineDOD.Server
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<IOnlineDOD, SqlOnlineDOD>();
-            
-            services.AddCors(setup =>
-            {
-            setup.AddPolicy("AllowBlazorWasm", policy =>
-                    {
-                        policy.WithOrigins(new string[] { "https://localhost:44329", "http://localhost:5080" }).AllowAnyMethod().AllowAnyHeader().AllowCredentials();
-                    });
-            });
+
+            services.AddControllersWithViews();
+            services.AddRazorPages();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -62,21 +63,22 @@ namespace BP_OnlineDOD.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
             }
 
             PrepDB.PrepDatabase(app);
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
-            app.UseCors("AllowBlazorWasm");
-
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }

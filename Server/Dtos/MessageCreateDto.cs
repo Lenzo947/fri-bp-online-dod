@@ -22,7 +22,7 @@ namespace BP_OnlineDOD.Server.Dtos
         public MessageCreateDto()
         {
             this.Deleted = false;
-            this.ThumbsUpCount = new Random().Next(0, 100);
+            this.ThumbsUpCount = 0;
         }
 
     }

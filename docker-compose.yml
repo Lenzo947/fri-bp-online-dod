@@ -16,8 +16,8 @@ services:
   backend:
     env_file: 
       - .env
-    container_name: OnlineDOD_dotNET-Core-3.1-API
-    image: fri-bp-online-dod_backend
+    container_name: OnlineDOD_dotNET-Core-5.0
+    image: fri-bp-online-dod
     build:
       context: .
       dockerfile: Server/Dockerfile
@@ -31,20 +31,3 @@ services:
     ports:
       - 4443:443
       - ${API_PORT}:80
-  frontend:
-    env_file: 
-      - .env
-    container_name: OnlineDOD_BlazorWASM
-    image: fri-bp-online-dod_frontend
-    build:
-      context: .
-      dockerfile: Client/Dockerfile
-    environment: 
-      API_URL: "http://localhost:${API_PORT}"
-    restart: on-failure:10
-    depends_on:
-      - ms-sql-server
-      - backend
-    ports:
-      - 5443:443
-      - ${FRONTEND_PORT}:80

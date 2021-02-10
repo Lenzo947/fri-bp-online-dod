@@ -69,6 +69,7 @@ namespace BP_OnlineDOD.Server.Data
             var result = _context
                 .Messages
                 .Include(m => m.ChildMessages)
+                //.Where(m => m.Deleted == false)
                 .ToList();
 
             return result;

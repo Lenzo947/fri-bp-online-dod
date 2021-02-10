@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -6,7 +7,7 @@ EXPOSE 443
 COPY wait-for-it.sh .
 RUN chmod +x wait-for-it.sh
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["Server/BP_OnlineDOD.Server.csproj", "Server/"]
 RUN dotnet restore "Server/BP_OnlineDOD.Server.csproj"

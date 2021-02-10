@@ -1,6 +1,8 @@
 ﻿@page "/online-chat"
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@inject IJSRuntime JS
+@inject ILocalStorageService localStorage
 
 <h1>Online deň otvorených dverí</h1>
 <p>
@@ -19,7 +21,7 @@
     <ValidationMessage For="@(() => MessageModel.Text)" />
 
     <div class="mb-5 mt-2">
-        <button type="submit" class="btn btn-primary"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
+        <button type="submit" class="btn btn-primary btn-sm"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
     </div>
 </EditForm>
 
@@ -29,16 +31,19 @@
     {
         if (msg.ParentMessageId == null)
         {
-            <MessageCard msg="@msg" Classes="mb-4" />
+            <CascadingValue Value="UpvotedMessages">
+                <MessageCard msg="@msg" Classes="mb-4" />
+            </CascadingValue>
         }
     }
 }
 else
 {
-    <SpinnerBig Classes="text-primary mb-4"/>
+    <SpinnerBig Classes="text-primary mb-4" />
 }
 
 @code {
+    public IList<int> UpvotedMessages { get; set; } = new List<int>();
 
     private Timer _timer { get; set; }
 
@@ -48,6 +53,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if (!await localStorage.ContainKeyAsync("upvotedMessages"))
+        {
+            await localStorage.SetItemAsync<IList<int>>("upvotedMessages", new List<int>());
+        }
+
+        UpvotedMessages = await localStorage.GetItemAsync<IList<int>>("upvotedMessages");
+
         await Load();
 
         _timer = new Timer(5000);
@@ -73,6 +85,8 @@ else
         {
             Messages = _messages;
         }
+
+        //await JS.InvokeVoidAsync("checkResize");
     }
 
     protected async Task Add()

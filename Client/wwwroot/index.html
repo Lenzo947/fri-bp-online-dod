@@ -11,11 +11,11 @@
 </head>
 
 <body>
-    <app>
+    <div id="app">
         <div class="d-flex justify-content-center align-items-center vh-100">
             <h1>Načítava sa...</h1>
         </div>
-    </app>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -50,6 +50,15 @@
                 }
             }
         }(window.location))
+
+        var oldBodySize = 0;
+        function checkResize() {
+            var bsa = $("body").scrollTop();
+            var val = $("body").scrollTop() + bsa - oldBodySize;
+            $("body").scrollTop(val);
+            oldBodySize = bsa;
+            console.log("nejde to");
+        }
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

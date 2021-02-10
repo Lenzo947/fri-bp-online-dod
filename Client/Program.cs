@@ -7,18 +7,25 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Blazored.SessionStorage;
+using Blazored.Modal;
+using Blazored.LocalStorage;
 
 namespace BP_OnlineDOD.Client
 {
-  public class Program
-  {
-    public static async Task Main(string[] args)
+    public class Program
     {
-      var builder = WebAssemblyHostBuilder.CreateDefault(args);
-      builder.RootComponents.Add<App>("app");
+        public static async Task Main(string[] args)
+        {
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.RootComponents.Add<App>("#app");
 
-      builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["API_URL"]) });
-      await builder.Build().RunAsync();
+            builder.Services.AddBlazoredSessionStorage();
+            builder.Services.AddBlazoredModal();
+            builder.Services.AddBlazoredLocalStorage();
+
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            await builder.Build().RunAsync();
+        }
     }
-  }
 }
