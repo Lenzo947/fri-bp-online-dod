@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
+using Ganss.XSS;
 
 
 namespace BP_OnlineDOD.Server
@@ -51,6 +52,8 @@ namespace BP_OnlineDOD.Server
             }); 
              
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>(_ => new HtmlSanitizer(new HashSet<string> { "br", "a" } ));
 
             services.AddScoped<IOnlineDOD, SqlOnlineDOD>();
 

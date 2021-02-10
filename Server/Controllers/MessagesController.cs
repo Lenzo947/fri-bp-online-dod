@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using ProfanityFilter.Interfaces;
+using Ganss.XSS;
 
 namespace BP_OnlineDOD.Server.Controllers
 {
@@ -17,12 +18,14 @@ namespace BP_OnlineDOD.Server.Controllers
         private readonly IOnlineDOD _onlineDOD;
         private readonly IMapper _mapper;
         private readonly IProfanityFilter _profanityFilter;
+        private readonly IHtmlSanitizer _htmlSanitizer;
 
-        public MessagesController(IOnlineDOD onlineDOD, IMapper mapper)
+        public MessagesController(IOnlineDOD onlineDOD, IMapper mapper, IHtmlSanitizer htmlSanitizer)
         {
             _onlineDOD = onlineDOD;
             _mapper = mapper;
             _profanityFilter = new ProfanityFilter.ProfanityFilter();
+            _htmlSanitizer = htmlSanitizer;
 
             string[] profanities = {
                 "buzerant",
@@ -788,8 +791,14 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPost]
         public ActionResult<MessageReadDto> CreateMessage(MessageCreateDto messageCreateDto)
         {
-            messageCreateDto.Text = _profanityFilter.CensorString(messageCreateDto.Text);
+            messageCreateDto.Text =  _htmlSanitizer.Sanitize(_profanityFilter.CensorString(messageCreateDto.Text));
 
+            if (messageCreateDto.Text == "")
+            {
+                messageCreateDto.Text = "<prázdna po vyfiltrovaní>";
+                messageCreateDto.Deleted = true;
+            }
+            
             var messageModel = _mapper.Map<Message>(messageCreateDto);
             _onlineDOD.CreateMessage(messageModel);
             _onlineDOD.SaveChanges();
