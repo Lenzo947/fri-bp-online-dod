@@ -15,19 +15,19 @@ namespace BP_OnlineDOD.Server.Controllers
     [ApiController]
     public class MessagesController : ControllerBase
     {
-        private readonly IOnlineDOD _onlineDOD;
-        private readonly IMapper _mapper;
-        private readonly IProfanityFilter _profanityFilter;
-        private readonly IHtmlSanitizer _htmlSanitizer;
+    private readonly IOnlineDOD _onlineDOD;
+    private readonly IMapper _mapper;
+    private readonly IProfanityFilter _profanityFilter;
+    private readonly IHtmlSanitizer _htmlSanitizer;
 
-        public MessagesController(IOnlineDOD onlineDOD, IMapper mapper, IHtmlSanitizer htmlSanitizer)
-        {
-            _onlineDOD = onlineDOD;
-            _mapper = mapper;
-            _profanityFilter = new ProfanityFilter.ProfanityFilter();
-            _htmlSanitizer = htmlSanitizer;
+    public MessagesController(IOnlineDOD onlineDOD, IMapper mapper, IHtmlSanitizer htmlSanitizer)
+    {
+        _onlineDOD = onlineDOD;
+        _mapper = mapper;
+        _profanityFilter = new ProfanityFilter.ProfanityFilter();
+        _htmlSanitizer = htmlSanitizer;
 
-            string[] profanities = {
+        string[] profanities = {
                 "buzerant",
                 "buzík",
                 "cicina",
@@ -758,126 +758,126 @@ namespace BP_OnlineDOD.Server.Controllers
                 "zvetrelec"
             };
 
-            _profanityFilter.AddProfanity(profanities);
+        _profanityFilter.AddProfanity(profanities);
+    }
+
+    //GET api/messages
+    [HttpGet]
+    public ActionResult<IEnumerable<MessageReadDto>> GetAllMessages()
+    {
+        //Serilog.Log.Information("GET /api/messages");
+
+        var messageItems = _onlineDOD.GetAllMessages();
+
+        return Ok(_mapper.Map<IEnumerable<MessageReadDto>>(messageItems));
+    }
+
+    //GET api/messages/{id}
+    [HttpGet("{id}", Name = "GetMessageById")]
+    public ActionResult<MessageReadDto> GetMessageById(int id)
+    {
+        //Serilog.Log.Information($"GET /api/messages/{id}");
+
+        var messageItem = _onlineDOD.GetMessageById(id);
+        if (messageItem != null)
+        {
+        return Ok(_mapper.Map<MessageReadDto>(messageItem));
         }
 
-        //GET api/messages
-        [HttpGet]
-        public ActionResult<IEnumerable<MessageReadDto>> GetAllMessages()
+        return NotFound();
+    }
+
+    //POST api/messages
+    [HttpPost]
+    public ActionResult<MessageReadDto> CreateMessage(MessageCreateDto messageCreateDto)
+    {
+        messageCreateDto.Text =  _htmlSanitizer.Sanitize(_profanityFilter.CensorString(messageCreateDto.Text));
+
+        if (messageCreateDto.Text == "")
         {
-            //Serilog.Log.Information("GET /api/messages");
-
-            var messageItems = _onlineDOD.GetAllMessages();
-
-            return Ok(_mapper.Map<IEnumerable<MessageReadDto>>(messageItems)); 
+            messageCreateDto.Text = "<prázdna po vyfiltrovaní>";
+            messageCreateDto.Deleted = true;
         }
 
-        //GET api/messages/{id}
-        [HttpGet("{id}", Name = "GetMessageById")]
-        public ActionResult<MessageReadDto> GetMessageById(int id)
+        var messageModel = _mapper.Map<Message>(messageCreateDto);
+        _onlineDOD.CreateMessage(messageModel);
+        _onlineDOD.SaveChanges();
+
+        var messageReadDto = _mapper.Map<MessageReadDto>(messageModel);
+
+        //Serilog.Log.Information($"[{this.Request.Host.Host}] POST /api/messages -> ID - {messageReadDto.Id}");
+
+        return CreatedAtRoute(nameof(GetMessageById), new { Id = messageReadDto.Id }, messageReadDto);
+    }
+
+    //PUT api/messages/{id}
+    [HttpPut("{id}")]
+    public ActionResult UpdateMessage(int id, MessageUpdateDto messageUpdateDto)
+    {
+        messageUpdateDto.Text = _profanityFilter.CensorString(messageUpdateDto.Text);
+
+        var messageModel = _onlineDOD.GetMessageById(id);
+        if (messageModel == null)
         {
-            //Serilog.Log.Information($"GET /api/messages/{id}");
-
-            var messageItem = _onlineDOD.GetMessageById(id);
-            if (messageItem != null)
-            {
-                return Ok(_mapper.Map<MessageReadDto>(messageItem));
-            }
-
             return NotFound();
         }
 
-        //POST api/messages
-        [HttpPost]
-        public ActionResult<MessageReadDto> CreateMessage(MessageCreateDto messageCreateDto)
+        _mapper.Map(messageUpdateDto, messageModel);
+
+        _onlineDOD.UpdateMessage(messageModel);
+        _onlineDOD.SaveChanges();
+
+        //Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
+
+        return NoContent();
+    }
+
+    //PATCH api/messages/{id}
+    [HttpPatch("{id}")]
+    public ActionResult PartialMessageUpdate(int id, JsonPatchDocument<MessageUpdateDto> patchDoc)
+    {
+
+        var messageModel = _onlineDOD.GetMessageById(id);
+        if (messageModel == null)
         {
-            messageCreateDto.Text =  _htmlSanitizer.Sanitize(_profanityFilter.CensorString(messageCreateDto.Text));
-
-            if (messageCreateDto.Text == "")
-            {
-                messageCreateDto.Text = "<prázdna po vyfiltrovaní>";
-                messageCreateDto.Deleted = true;
-            }
-            
-            var messageModel = _mapper.Map<Message>(messageCreateDto);
-            _onlineDOD.CreateMessage(messageModel);
-            _onlineDOD.SaveChanges();
-
-            var messageReadDto = _mapper.Map<MessageReadDto>(messageModel);
-
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] POST /api/messages -> ID - {messageReadDto.Id}");
-
-            return CreatedAtRoute(nameof(GetMessageById), new { Id = messageReadDto.Id }, messageReadDto);
+            return NotFound();
         }
 
-        //PUT api/messages/{id}
-        [HttpPut("{id}")]
-        public ActionResult UpdateMessage(int id, MessageUpdateDto messageUpdateDto)
+        var messageToPatch = _mapper.Map<MessageUpdateDto>(messageModel);
+        patchDoc.ApplyTo(messageToPatch, ModelState);
+
+        if (!TryValidateModel(messageToPatch))
         {
-            messageUpdateDto.Text = _profanityFilter.CensorString(messageUpdateDto.Text);
-
-            var messageModel = _onlineDOD.GetMessageById(id);
-            if (messageModel == null)
-            {
-                return NotFound();
-            }
-
-            _mapper.Map(messageUpdateDto, messageModel);
-
-            _onlineDOD.UpdateMessage(messageModel);
-            _onlineDOD.SaveChanges();
-
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
-
-            return NoContent();
+        return ValidationProblem(ModelState);
         }
 
-        //PATCH api/messages/{id}
-        [HttpPatch("{id}")]
-        public ActionResult PartialMessageUpdate(int id, JsonPatchDocument<MessageUpdateDto> patchDoc)
+        _mapper.Map(messageToPatch, messageModel);
+
+        _onlineDOD.UpdateMessage(messageModel);
+        _onlineDOD.SaveChanges();
+
+        //Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
+
+        return NoContent();
+    }
+
+    //DELETE api/messages/{id}
+    [HttpDelete("{id}")]
+    public ActionResult DeleteMessage(int id)
+    {
+
+        var messageModel = _onlineDOD.GetMessageById(id);
+        if (messageModel == null)
         {
-
-            var messageModel = _onlineDOD.GetMessageById(id);
-            if (messageModel == null)
-            {
-                return NotFound();
-            }
-
-            var messageToPatch = _mapper.Map<MessageUpdateDto>(messageModel);
-            patchDoc.ApplyTo(messageToPatch, ModelState);
-
-            if (!TryValidateModel(messageToPatch))
-            {
-                return ValidationProblem(ModelState);
-            }
-
-            _mapper.Map(messageToPatch, messageModel);
-
-            _onlineDOD.UpdateMessage(messageModel);
-            _onlineDOD.SaveChanges();
-
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
-
-            return NoContent();
+        return NotFound();
         }
 
-        //DELETE api/messages/{id}
-        [HttpDelete("{id}")]
-        public ActionResult DeleteMessage(int id)
-        {
+        _onlineDOD.DeleteMessage(messageModel);
+        _onlineDOD.SaveChanges();
 
-            var messageModel = _onlineDOD.GetMessageById(id);
-            if (messageModel == null)
-            {
-                return NotFound();
-            }
+        //Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
 
-            _onlineDOD.DeleteMessage(messageModel);
-            _onlineDOD.SaveChanges();
-
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
-
-            return NoContent();
-        }
+        return NoContent();
+    }
     }
 }

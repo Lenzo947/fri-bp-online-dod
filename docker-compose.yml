@@ -13,7 +13,7 @@ services:
       MSSQL_PID: Express
     ports:
       - "${DB_PORT}:1433"
-  backend:
+  app:
     env_file: 
       - .env
     container_name: OnlineDOD_dotNET-Core-5.0
@@ -22,12 +22,15 @@ services:
       context: .
       dockerfile: Server/Dockerfile
     environment:
-      DB__Address: "ms-sql-server"
-      DB__Port: "${DB_PORT}"
+      - DB_ADDRESS=ms-sql-server
+      - DB_PORT=1433
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
     restart: on-failure:10
     depends_on:
       - ms-sql-server
-    entrypoint: ["./wait-for-it.sh", "ms-sql-server:${DB_PORT}", "-t", "120", "--", "dotnet", "BP_OnlineDOD.Server.dll"]
+    entrypoint: ["./wait-for-it.sh", "ms-sql-server:1433", "-t", "120", "--", "dotnet", "BP_OnlineDOD.Server.dll"]
     ports:
       - 4443:443
       - ${API_PORT}:80

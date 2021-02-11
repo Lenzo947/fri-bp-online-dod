@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BP_OnlineDOD.Server.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -17,38 +20,47 @@ namespace BP_OnlineDOD.Server
 
         public static void Main(string[] args)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddCommandLine(args)
-                .Build();
-
-            var server = config["DB:Address"];
-            var port = config["DB:Port"];
-            var user = config["DB:Username"];
-            var password = config["DB:Password"];
-            var database = config["DB:Database"];
+            var server = Environment.GetEnvironmentVariable("DB_ADDRESS") ?? "localhost";
+            var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "1433";
+            var user = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "SA";
+            var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "FRIUniza1990";
+            var database = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "OnlineDOD_DB";
 
             var sinkOpts = new MSSqlServerSinkOptions();
             sinkOpts.TableName = "Logs";
-            //sinkOpts.AutoCreateSqlTable = true;
-            //var columnOpts = new ColumnOptions();
-            //columnOpts.Store.Remove(StandardColumn.Properties);
-            //columnOpts.Store.Add(StandardColumn.LogEvent);
-            //columnOpts.LogEvent.DataLength = 2048;
-            //columnOpts.PrimaryKey = options.TimeStamp;
-            //columnOpts.TimeStamp.NonClusteredIndex = true;
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Fatal)
+                .WriteTo.Console(Serilog.Events.LogEventLevel.Debug)
                 .WriteTo.MSSqlServer(
                     connectionString: $"Data Source={server},{port};Initial Catalog={database};User Id={user}; Password={password};",
                     sinkOptions: sinkOpts)
                 .CreateLogger();
 
-            //Log.Warning("Dolezity vypis");
+            var host = CreateHostBuilder(args).Build();
 
-            CreateHostBuilder(args).Build().Run();
+
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            try
+            {
+                var dbContext = services.GetRequiredService<OnlineDODContext>();
+                if (dbContext.Database.IsSqlServer())
+                {
+                    dbContext.Database.Migrate();
+                }
+            }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+                logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+
+                throw;
+            }
+
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

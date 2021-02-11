@@ -36,11 +36,11 @@ namespace BP_OnlineDOD.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var server = Configuration["DB:Address"];
-            var port = Configuration["DB:Port"];
-            var user = Configuration["DB:Username"];
-            var password = Configuration["DB:Password"];
-            var database = Configuration["DB:Database"];
+            var server = Environment.GetEnvironmentVariable("DB_ADDRESS") ?? "localhost";
+            var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "1433";
+            var user = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "SA";
+            var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "FRIUniza1990";
+            var database = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "OnlineDOD_DB";
 
             services.AddDbContext<OnlineDODContext>(opt => opt.UseSqlServer
                 ($"Server={server},{port};Initial Catalog={database};User ID ={user};Password={password}"));
@@ -49,11 +49,11 @@ namespace BP_OnlineDOD.Server
             {
                 s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 s.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            }); 
-             
+            });
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>(_ => new HtmlSanitizer(new HashSet<string> { "br", "a" } ));
+            services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>(_ => new HtmlSanitizer(new HashSet<string> { "br", "a" }));
 
             services.AddScoped<IOnlineDOD, SqlOnlineDOD>();
 
@@ -68,8 +68,6 @@ namespace BP_OnlineDOD.Server
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
             }
-
-            PrepDB.PrepDatabase(app);
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
