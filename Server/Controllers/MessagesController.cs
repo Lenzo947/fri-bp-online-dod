@@ -805,7 +805,7 @@ namespace BP_OnlineDOD.Server.Controllers
 
             var messageReadDto = _mapper.Map<MessageReadDto>(messageModel);
 
-            Serilog.Log.Information($"[{this.Request.Host.Host}] POST /api/messages -> ID - {messageReadDto.Id}");
+            //Serilog.Log.Information($"[{this.Request.Host.Host}] POST /api/messages -> ID - {messageReadDto.Id}");
 
             return CreatedAtRoute(nameof(GetMessageById), new { Id = messageReadDto.Id }, messageReadDto);
         }
@@ -827,7 +827,7 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.UpdateMessage(messageModel);
             _onlineDOD.SaveChanges();
 
-            Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
+            //Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
 
             return NoContent();
         }
@@ -856,7 +856,7 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.UpdateMessage(messageModel);
             _onlineDOD.SaveChanges();
 
-            Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
+            //Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
 
             return NoContent();
         }
@@ -875,7 +875,7 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.DeleteMessage(messageModel);
             _onlineDOD.SaveChanges();
 
-            Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
+            //Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
 
             return NoContent();
         }
