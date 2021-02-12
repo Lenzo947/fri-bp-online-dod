@@ -7,14 +7,27 @@ namespace BP_OnlineDOD.Shared.Models
 {
     public class Log
     {
-        public int Id { get; set; }
-        public string Message { get; set; }
-        public string MessageTemplate { get; set; }
+        public int id { get; set; }
+
+        [Column(TypeName = "varchar(100)")]
+        public string Timestamp { get; set; }
+
+        [Column(TypeName = "varchar(15)")]
         public string Level { get; set; }
-        public DateTime TimeStamp { get; set; }
+
+        [Column(TypeName = "text")]
+        public string Template { get; set; }
+
+        [Column(TypeName = "text")]
+        public string Message { get; set; }
+
+        [Column(TypeName = "text")]
         public string Exception { get; set; }
-        [Column(TypeName = "Xml")]
+
+        [Column(TypeName = "text")]
         public string Properties { get; set; }
-        public string LogEvent { get; set; }
+
+        [Column(TypeName = "timestamp")]
+        public DateTime _ts { get; set; }
     }
 }

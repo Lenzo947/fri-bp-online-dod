@@ -23,7 +23,7 @@
                 <tr>
                     <td class="text-left align-middle">@log.Message</td>
                     <td class="align-middle">@log.Level</td>
-                    <td class="align-middle">@log.TimeStamp.ToString("dd.MM. yyyy HH:mm:ss")</td>
+                    <td class="align-middle">@log._ts.ToLocalTime().ToString("dd.MM. yyyy HH:mm:ss")</td>
                 </tr>
             }
         </tbody>

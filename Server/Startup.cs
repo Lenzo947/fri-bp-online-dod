@@ -37,13 +37,15 @@ namespace BP_OnlineDOD.Server
         public void ConfigureServices(IServiceCollection services)
         {
             var server = Environment.GetEnvironmentVariable("DB_ADDRESS") ?? "localhost";
-            var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "1433";
-            var user = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "SA";
+            var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
+            var user = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "root";
             var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "FRIUniza1990";
             var database = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "OnlineDOD_DB";
 
-            services.AddDbContext<OnlineDODContext>(opt => opt.UseSqlServer
-                ($"Server={server},{port};Initial Catalog={database};User ID ={user};Password={password}"));
+            var connectionString = $"server={server}; port={port}; database={database}; user={user}; password={password}; Persist Security Info=False; Connect Timeout=300";
+
+            services.AddDbContextPool<OnlineDODContext>(opt => opt.UseMySql
+                (connectionString, ServerVersion.AutoDetect(connectionString)));
 
             services.AddControllers().AddNewtonsoftJson(s =>
             {

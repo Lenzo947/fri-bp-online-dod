@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BP_OnlineDOD.Server.Migrations
@@ -11,9 +12,9 @@ namespace BP_OnlineDOD.Server.Migrations
                 name: "BlockedIPs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Address = table.Column<string>(nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Address = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,32 +25,32 @@ namespace BP_OnlineDOD.Server.Migrations
                 name: "Logs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Message = table.Column<string>(nullable: true),
-                    MessageTemplate = table.Column<string>(nullable: true),
-                    Level = table.Column<string>(nullable: true),
-                    TimeStamp = table.Column<DateTime>(nullable: false),
-                    Exception = table.Column<string>(nullable: true),
-                    Properties = table.Column<string>(type: "Xml", nullable: true),
-                    LogEvent = table.Column<string>(nullable: true)
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Timestamp = table.Column<string>(type: "varchar(100)", nullable: true),
+                    Level = table.Column<string>(type: "varchar(15)", nullable: true),
+                    Template = table.Column<string>(type: "text", nullable: true),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    Exception = table.Column<string>(type: "text", nullable: true),
+                    Properties = table.Column<string>(type: "text", nullable: true),
+                    _ts = table.Column<DateTime>(type: "timestamp", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Logs", x => x.Id);
+                    table.PrimaryKey("PK_Logs", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Text = table.Column<string>(maxLength: 10000, nullable: false),
-                    ThumbsUpCount = table.Column<int>(nullable: false),
-                    TimeSent = table.Column<DateTime>(nullable: false),
-                    Deleted = table.Column<bool>(nullable: false),
-                    ParentMessageId = table.Column<int>(nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Text = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", maxLength: 10000, nullable: false),
+                    ThumbsUpCount = table.Column<int>(type: "int", nullable: false),
+                    TimeSent = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Deleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    ParentMessageId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

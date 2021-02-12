@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Serilog.Sinks.MSSqlServer;
 
 namespace BP_OnlineDOD.Server
 {
@@ -20,25 +19,24 @@ namespace BP_OnlineDOD.Server
 
         public static void Main(string[] args)
         {
-            var server = Environment.GetEnvironmentVariable("DB_ADDRESS") ?? "localhost";
-            var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "1433";
-            var user = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "SA";
-            var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "FRIUniza1990";
-            var database = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "OnlineDOD_DB";
+            //var server = Environment.GetEnvironmentVariable("DB_ADDRESS") ?? "localhost";
+            //var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
+            //var user = Environment.GetEnvironmentVariable("DB_USERNAME") ?? "root";
+            //var password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "FRIUniza1990";
+            //var database = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "OnlineDOD_DB";
 
-            var sinkOpts = new MSSqlServerSinkOptions();
-            sinkOpts.TableName = "Logs";
+            
+            //var connectionString = $"server = {server}; uid = {user}; pwd = {password}; database = {database};";
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Fatal)
-                .WriteTo.Console(Serilog.Events.LogEventLevel.Debug)
-                .WriteTo.MSSqlServer(
-                    connectionString: $"Data Source={server},{port};Initial Catalog={database};User Id={user}; Password={password};",
-                    sinkOptions: sinkOpts)
-                .CreateLogger();
+            //Log.Logger = new LoggerConfiguration()
+            //    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Fatal)
+            //    .WriteTo.Console(Serilog.Events.LogEventLevel.Debug)
+            //    .WriteTo.MySQL(connectionString, storeTimestampInUtc: true, batchSize: 1)
+            //    .CreateLogger();
+
+            //Log.Warning("Dolezity vypis");
 
             var host = CreateHostBuilder(args).Build();
-
 
             using var scope = host.Services.CreateScope();
             var services = scope.ServiceProvider;
@@ -46,7 +44,7 @@ namespace BP_OnlineDOD.Server
             try
             {
                 var dbContext = services.GetRequiredService<OnlineDODContext>();
-                if (dbContext.Database.IsSqlServer())
+                if (dbContext.Database.IsMySql())
                 {
                     dbContext.Database.Migrate();
                 }
@@ -68,6 +66,6 @@ namespace BP_OnlineDOD.Server
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).UseSerilog();
+                }); // .UseSerilog()
     }
 }

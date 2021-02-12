@@ -3,34 +3,31 @@ using System;
 using BP_OnlineDOD.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BP_OnlineDOD.Server.Migrations
 {
     [DbContext(typeof(OnlineDODContext))]
-    [Migration("20210206113318_NewestMigration")]
+    [Migration("20210212153041_NewestMigration")]
     partial class NewestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64)
+                .HasAnnotation("ProductVersion", "5.0.3");
 
             modelBuilder.Entity("BP_OnlineDOD.Shared.Models.BlockedIP", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -39,33 +36,32 @@ namespace BP_OnlineDOD.Server.Migrations
 
             modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Log", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<string>("Exception")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Level")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LogEvent")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(15)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MessageTemplate")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Properties")
-                        .HasColumnType("Xml");
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Template")
+                        .HasColumnType("text");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Timestamp")
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("_ts")
+                        .HasColumnType("timestamp");
+
+                    b.HasKey("id");
 
                     b.ToTable("Logs");
                 });
@@ -74,25 +70,24 @@ namespace BP_OnlineDOD.Server.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<bool>("Deleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int?>("ParentMessageId")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasMaxLength(10000);
+                        .HasMaxLength(10000)
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("ThumbsUpCount")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("TimeSent")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
@@ -106,6 +101,13 @@ namespace BP_OnlineDOD.Server.Migrations
                     b.HasOne("BP_OnlineDOD.Shared.Models.Message", "ParentMessage")
                         .WithMany("ChildMessages")
                         .HasForeignKey("ParentMessageId");
+
+                    b.Navigation("ParentMessage");
+                });
+
+            modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Message", b =>
+                {
+                    b.Navigation("ChildMessages");
                 });
 #pragma warning restore 612, 618
         }
