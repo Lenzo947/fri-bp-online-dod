@@ -15,7 +15,7 @@
         else
         {
             <div class="card-title mb-0">
-                <strong>Anonym</strong>
+                <strong>@msg.Author</strong>
                 <div class="label label-primary cursor-pointer ml-1 @UpvoteColor()" @onclick="ToggleUpvote">
                     <span class="oi oi-thumb-up"></span>
                     <span>@msg.ThumbsUpCount</span>
@@ -30,25 +30,28 @@
         @if (msg.Deleted)
         {
             <p class="card-text text-muted px-2 pt-2 pl-2">Správa bola zmazaná, odpovede sú skryté</p>
+            <AuthorizeView>
+                <button @onclick="Renew" type="button" class="btn btn-sm btn-outline-success"><span class="oi oi-trash mr-2"></span>Obnoviť</button>
+            </AuthorizeView>
         }
         else
         {
             <p class="card-text px-2 pt-2 pl-2">@((MarkupString) TextTransformer.Transform(msg.Text))</p>
 
-            
-            @if (!edit)
-            {
-                <button @onclick="ToggleEdit" type="button" class="btn btn-sm btn-outline-primary mr-2"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
-            }
+            <AuthorizeView>
+                @if (!edit)
+                {
+                    <button @onclick="ToggleEdit" type="button" class="btn btn-sm btn-outline-primary mr-2"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+                }
 
-            <button @onclick="Delete" type="button" class="btn btn-sm btn-outline-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
-            
+                <button @onclick="ShowDeleteModal" type="button" class="btn btn-sm btn-outline-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
+            </AuthorizeView>
+
 
             if (!reply)
             {
-                <button @onclick="ToggleReply" type="button" class="btn btn-sm btn-primary float-right">Odpovedať</button>
+                <button @onclick="ToggleReply" type="button" class="btn btn-sm btn-primary float-right"><span class="oi oi-comment-square mr-2"></span>Odpovedať</button>
             }
-
         }
 
     </div>
@@ -80,8 +83,10 @@
             <EditForm Model="newMsg" OnValidSubmit="Reply">
                 <DataAnnotationsValidator />
 
-                <label for="title" class="mt-4">Odpoveď</label>
+                <label for="author" class="mt-4">Meno</label>
+                <InputText @bind-Value="newMsg.Author" class="form-control mb-2" id="author" placeholder="Anonym"></InputText>
 
+                <label for="title">Odpoveď</label>
                 <InputTextArea @bind-Value="newMsg.Text"
                                class="form-control mb-2"
                                id="title"
@@ -106,10 +111,16 @@
     </div>
 </div>
 
-@code {
+@code {        
+
+    [CascadingParameter] 
+    public IModalService Modal { get; set; }
 
     [CascadingParameter]
     public IList<int> UpvotedMessages { get; set; }
+
+    [CascadingParameter]
+    public string Author { get; set; }
 
     [Parameter]
     public Message msg { get; set; }
@@ -122,6 +133,17 @@
     public bool edit { get; set; } = false;
 
     public bool reply { get; set; } = false;
+
+    async Task ShowDeleteModal()
+    {
+        var confirmForm = Modal.Show<ConfirmDelete>("Naozaj chcete zmazať správu?");
+        var result = await confirmForm.Result;
+
+        if (!result.Cancelled)
+        {
+            await Delete();
+        }
+    }
 
 
     public void ToggleEdit()
@@ -138,6 +160,7 @@
     public void ToggleReply()
     {
         newMsg = new Message();
+        newMsg.Author = Author;
 
         this.reply = !reply;
         this.edit = false;
@@ -145,7 +168,9 @@
 
     public async Task Reply()
     {
-        var payload = new { Text = newMsg.Text, ParentMessageId = msg.Id };
+        var payload = new { Author = newMsg.Author, Text = newMsg.Text, ParentMessageId = msg.Id };
+
+        await localStorage.SetItemAsync<string>("author", newMsg.Author);
 
         var response = await httpClient.PostAsJsonAsync("api/messages", payload);
 
@@ -170,6 +195,24 @@
             msg.Text = newMsg.Text;
 
             edit = false;
+        }
+    }
+
+    public async Task Renew()
+    {
+        var changes = new { Deleted = false };
+
+        StringContent payload = changes.ToPatchJsonContent();
+
+        var response = await httpClient.PatchAsync($"api/messages/{msg.Id}", payload);
+
+        if (response.IsSuccessStatusCode)
+        {
+            edit = false;
+
+            msg.Deleted = false;
+
+            StateHasChanged();
         }
     }
 

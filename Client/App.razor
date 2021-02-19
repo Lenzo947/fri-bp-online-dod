@@ -1,13 +1,25 @@
-@inject NavigationManager NavigationManager
+﻿@inject NavigationManager NavigationManager
 
-<Router AppAssembly="@typeof(Program).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-    </Found>
-    <NotFound>
-        @{
-            // redirect to home page if not found
-            NavigationManager.NavigateTo("");
-        }
-    </NotFound>
-</Router>
+<CascadingAuthenticationState>
+    <CascadingBlazoredModal>
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    <Authorizing>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <h1>Overujem identitu...</h1>
+                        </div>
+                    </Authorizing>
+                </AuthorizeRouteView>
+            </Found>
+            <NotFound>
+                <CascadingAuthenticationState>
+                    @{
+                        // redirect to home page if not found
+                        NavigationManager.NavigateTo("");
+                    }
+                </CascadingAuthenticationState>
+            </NotFound>
+        </Router>
+    </CascadingBlazoredModal>
+</CascadingAuthenticationState>

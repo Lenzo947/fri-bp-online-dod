@@ -70,6 +70,9 @@ namespace BP_OnlineDOD.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("Author")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<bool>("Deleted")
                         .HasColumnType("tinyint(1)");
 

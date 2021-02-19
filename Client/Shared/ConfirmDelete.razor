@@ -1,0 +1,14 @@
+﻿<div>
+    <button @onclick="Confirm" class="btn btn-danger"><span class="oi oi-check px-2"></span></button>
+    <button @onclick="Cancel" class="btn btn-primary ml-2"><span class="oi oi-x px-2"></span></button>
+</div>
+
+@code {
+
+    [CascadingParameter] 
+    BlazoredModalInstance BlazoredModal { get; set; }
+
+    async Task Confirm() => await BlazoredModal.CloseAsync(ModalResult.Ok(true));
+    async Task Cancel() => await BlazoredModal.CancelAsync();
+
+}

@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Blazored.SessionStorage;
 using Blazored.Modal;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
+using BP_OnlineDOD.Client.Services;
 
 namespace BP_OnlineDOD.Client
 {
@@ -23,6 +25,18 @@ namespace BP_OnlineDOD.Client
             builder.Services.AddBlazoredSessionStorage();
             builder.Services.AddBlazoredModal();
             builder.Services.AddBlazoredLocalStorage();
+
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
+
+            builder.Services.AddScoped<TokenAuthenticationStateProvider, TokenAuthenticationStateProvider>();
+
+            builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
+            {
+                return provider.GetRequiredService<TokenAuthenticationStateProvider>();
+            });
+
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             await builder.Build().RunAsync();

@@ -10,6 +10,8 @@ namespace BP_OnlineDOD.Shared.Models
         [Key]
         public int Id { get; set; }
 
+        public string Author { get; set; }
+
         [Required]
         [StringLength(10000, ErrorMessage = "Správa presahuje povolený počet znakov! (10000)")]
         [MinLength(5, ErrorMessage = "Správa musí obsahovať aspoň 5 znakov!")]
@@ -35,24 +37,6 @@ namespace BP_OnlineDOD.Shared.Models
         {
             this.TimeSent = DateTime.UtcNow;
             this.ChildMessages = new List<Message>();
-        }
-    }
-
-    public class MessageComparer : IEqualityComparer<Message>
-    {
-        public bool Equals(Message m1, Message m2)
-        {
-            return 
-                m1.Id == m2.Id &&
-                m1.Text == m2.Text &&
-                m1.ThumbsUpCount == m2.ThumbsUpCount &&
-                m1.TimeSent == m2.TimeSent &&
-                m1.Deleted == m2.Deleted;
-        }
-
-        public int GetHashCode(Message m)
-        {
-            return m.Id;
         }
     }
 }

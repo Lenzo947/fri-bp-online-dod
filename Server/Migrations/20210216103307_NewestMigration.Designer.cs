@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BP_OnlineDOD.Server.Migrations
 {
     [DbContext(typeof(OnlineDODContext))]
-    [Migration("20210212153041_NewestMigration")]
+    [Migration("20210216103307_NewestMigration")]
     partial class NewestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,6 +71,9 @@ namespace BP_OnlineDOD.Server.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("Author")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<bool>("Deleted")
                         .HasColumnType("tinyint(1)");

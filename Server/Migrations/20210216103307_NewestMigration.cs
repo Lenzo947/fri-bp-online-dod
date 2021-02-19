@@ -46,6 +46,7 @@ namespace BP_OnlineDOD.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Author = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", nullable: true),
                     Text = table.Column<string>(type: "longtext CHARACTER SET utf8mb4", maxLength: 10000, nullable: false),
                     ThumbsUpCount = table.Column<int>(type: "int", nullable: false),
                     TimeSent = table.Column<DateTime>(type: "datetime(6)", nullable: false),

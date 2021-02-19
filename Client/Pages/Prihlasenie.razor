@@ -1,0 +1,63 @@
+﻿@page "/login"
+@inject IAccountService AccountService
+@inject NavigationManager navigationManager
+
+<div class="mb-4">
+    <AuthorizeView>
+        <Authorized>
+            <h1>Prihlásený</h1>
+            <div>
+                <button type="button" class="btn btn-primary" @onclick="Logout">Odhlásiť</button>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <h1>Neprihlásený</h1>
+            <div>
+                <div class="form-group">
+                    <label for="inputEmail">Email</label>
+                    <input type="email" class="form-control" id="inputEmail" @bind="@model.Email" />
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword">Password</label>
+                    <input type="password" class="form-control" id="inputPassword" @bind="@model.Password" />
+                </div>
+                <button type="button" class="btn btn-primary" @onclick="Login">Prihlásiť</button>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationState { get; set; }
+
+    private IList<Claim> userClaim
+    {
+        get
+        {
+            var auth = authenticationState.Result;
+            if (auth.User.Identity.IsAuthenticated)
+            {
+                return auth.User.Claims.ToList();
+            }
+            return new List<Claim>();
+        }
+    }
+
+    private LoginModel model = new LoginModel();
+
+    private async Task Login()
+    {
+        if (await AccountService.LoginAsync(model))
+        {
+            navigationManager.NavigateTo("/admin");
+        }
+    }
+
+    private async void Logout()
+    {
+        await AccountService.LogoutAsync();
+    }
+
+}

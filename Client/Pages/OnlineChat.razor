@@ -12,10 +12,13 @@
 <hr class="mb-4" />
 
 <EditForm Model="MessageModel" OnValidSubmit="Add">
+    
     <DataAnnotationsValidator />
 
-    <label for="title">Nová správa</label>
+    <label for="author">Meno</label>
+    <InputText @bind-Value="MessageModel.Author" class="form-control mb-2" id="author" placeholder="Anonym"></InputText>
 
+    <label for="title">Správa</label>
     <InputTextArea @bind-Value="MessageModel.Text" class="form-control mb-2" id="title" placeholder="Správa..." rows="5"
                    oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
     <ValidationMessage For="@(() => MessageModel.Text)" />
@@ -31,8 +34,10 @@
     {
         if (msg.ParentMessageId == null)
         {
-            <CascadingValue Value="UpvotedMessages">
-                <MessageCard msg="@msg" Classes="mb-4" />
+            <CascadingValue Value="Author">
+                <CascadingValue Value="UpvotedMessages">
+                    <MessageCard msg="@msg" Classes="mb-4" />
+                </CascadingValue>
             </CascadingValue>
         }
     }
@@ -45,11 +50,13 @@ else
 @code {
     public IList<int> UpvotedMessages { get; set; } = new List<int>();
 
+    public string Author { get; set; } = "";
+
     private Timer _timer { get; set; }
 
     protected Message MessageModel { get; set; } = new Message();
 
-    public virtual IEnumerable<Message> Messages { get; set; }
+    public virtual ICollection<Message> Messages { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,8 +64,21 @@ else
         {
             await localStorage.SetItemAsync<IList<int>>("upvotedMessages", new List<int>());
         }
+        else
+        {
+            UpvotedMessages = await localStorage.GetItemAsync<IList<int>>("upvotedMessages");
+        }
 
-        UpvotedMessages = await localStorage.GetItemAsync<IList<int>>("upvotedMessages");
+        if (!await localStorage.ContainKeyAsync("author"))
+        {
+            await localStorage.SetItemAsync<string>("author", "");
+        }
+        else
+        {
+            Author = await localStorage.GetItemAsync<string>("author");
+        }
+
+        MessageModel.Author = Author;
 
         await Load();
 
@@ -73,13 +93,42 @@ else
 
     protected async Task Load()
     {
+
         Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
 
         StateHasChanged();
 
+        //var _messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
+
         //if (Messages != null)
         //{
-        //    Messages = Messages.Union(_messages, new MessageComparer()).ToList();
+        //    bool found;
+        //    for (int i = 0; i < _messages.Count; i++)
+        //    {
+        //        found = false;
+        //        var newMsg = _messages.ElementAt(i);
+        //        int j;
+
+        //        for (j = 0; j < Messages.Count; j++)
+        //        {
+        //            var msg = Messages.ElementAt(j);
+
+        //            if (newMsg.Id == msg.Id && (newMsg.Author != msg.Author || newMsg.Text != msg.Text || newMsg.ThumbsUpCount != msg.ThumbsUpCount || newMsg.Deleted != msg.Deleted))
+        //            {
+        //                Messages.Remove(msg);
+        //                Messages.Add(newMsg);
+        //                found = true;
+        //                break;
+        //            }
+        //        }
+
+        //        if (!found)
+        //        {
+        //            Messages.Add(newMsg);
+        //        }
+        //    }
+
+        //    Messages = Messages.OrderBy(msg => msg.TimeSent).ToList();
 
         //    StateHasChanged();
         //}
@@ -88,12 +137,23 @@ else
         //    Messages = _messages;
         //}
 
+
         //await JS.InvokeVoidAsync("checkResize");
     }
 
     protected async Task Add()
     {
-        var payload = new { Text = MessageModel.Text };
+        if (MessageModel.Author == "")
+        {
+            MessageModel.Author = "Anonym";
+        }
+        else
+        {
+            Author = MessageModel.Author;
+            await localStorage.SetItemAsync<string>("author", MessageModel.Author);
+        }
+
+        var payload = new { Author = MessageModel.Author, Text = MessageModel.Text };
 
         var response = await httpClient.PostAsJsonAsync("api/messages", payload);
 

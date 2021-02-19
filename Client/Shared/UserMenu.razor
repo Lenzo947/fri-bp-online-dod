@@ -1,12 +1,16 @@
 ﻿@inject NavigationManager NavigationManager
+@using System.Security.Claims
+
+<AuthorizeView>
+    <Authorized>
+        <div class="alert alert-info">
+            <div class="btn btn-info ml-2" @onclick="NavigateToLogs">Logy</div>
+            <div class="btn btn-warning ml-2" @onclick="NavigateToIPManagement">Správa IP adries</div>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 
-<div class="alert alert-info">
-
-    <div class="btn btn-info ml-2" @onclick="NavigateToLogs">Logy</div>
-    <div class="btn btn-warning ml-2" @onclick="NavigateToIPManagement">Správa IP adries</div>
-
-</div>
 
 @code {
     private void NavigateToLogs()

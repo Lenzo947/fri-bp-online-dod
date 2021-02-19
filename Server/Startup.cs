@@ -15,7 +15,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Ganss.XSS;
-
+using BP_OnlineDOD.Server.Logic;
+using BP_OnlineDOD.Server.Shared;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace BP_OnlineDOD.Server
 {
@@ -58,6 +62,25 @@ namespace BP_OnlineDOD.Server
             services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>(_ => new HtmlSanitizer(new HashSet<string> { "br", "a" }));
 
             services.AddScoped<IOnlineDOD, SqlOnlineDOD>();
+            services.AddScoped<IAccountLogic, AccountLogic>();
+            services.AddScoped<ProfanityFilter.Interfaces.IProfanityFilter, ProfanityFilter.ProfanityFilter>();
+
+            services.Configure<TokenSettings>(Configuration.GetSection("TokenSettings"));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = Configuration.GetSection("TokenSettings").GetValue<string>("Issuer"),
+                    ValidateIssuer = true,
+                    ValidAudience = Configuration.GetSection("TokenSettings").GetValue<string>("Audience"),
+                    ValidateAudience = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("TokenSettings").GetValue<string>("Key"))),
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true
+                };
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -76,6 +99,8 @@ namespace BP_OnlineDOD.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

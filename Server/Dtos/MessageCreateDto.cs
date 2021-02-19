@@ -9,6 +9,9 @@ namespace BP_OnlineDOD.Server.Dtos
     public class MessageCreateDto
     {
         [Required]
+        public string Author { get; set; }
+
+        [Required]
         public string Text { get; set; }
 
         [Required]
