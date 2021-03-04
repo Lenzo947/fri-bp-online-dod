@@ -5,6 +5,7 @@
 
 # .NET static files
 Server/StaticFiles/uploads/*
+!Server/StaticFiles/uploads/.gitkeep 
 
 # Environment variables
 *.env
