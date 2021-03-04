@@ -12,7 +12,7 @@
 <hr class="mb-4" />
 
 <EditForm Model="MessageModel" OnValidSubmit="Add">
-    
+
     <DataAnnotationsValidator />
 
     <label for="author">Meno</label>
@@ -23,9 +23,22 @@
                    oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
     <ValidationMessage For="@(() => MessageModel.Text)" />
 
-    <div class="mb-5 mt-2">
-        <button type="submit" class="btn btn-primary btn-sm"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
-    </div>
+    @if (Attachment)
+    {
+        <AttachmentWindow />
+    }
+    
+<div class="mb-5 mt-2">
+    <button type="submit" class="btn btn-primary btn-sm mr-2"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
+    @if (Attachment)
+    {
+        <a @onclick="ToggleAttach"><span class="oi oi-link-intact text-danger mr-2"></span>Zrušiť prílohy</a>
+    }
+    else
+    {
+        <a @onclick="ToggleAttach"><span class="oi oi-link-intact mr-2"></span>Pridať prílohy</a>
+    }
+</div>
 </EditForm>
 
 @if (Messages != null) // wait for all messages to load first
@@ -49,6 +62,8 @@ else
 
 @code {
     public IList<int> UpvotedMessages { get; set; } = new List<int>();
+
+    public bool Attachment { get; set; } = false;
 
     public string Author { get; set; } = "";
 
@@ -165,9 +180,15 @@ else
         }
     }
 
+    protected void ToggleAttach()
+    {
+        Attachment = !Attachment;
+    }
+
     protected void ClearFields()
     {
         MessageModel.Text = null;
+        Attachment = false;
     }
 
 }

@@ -12,6 +12,8 @@ namespace BP_OnlineDOD.Server.Data
 
         public DbSet<Message> Messages { get; set; }
 
+        public DbSet<Attachment> Attachments { get; set; }
+
         public DbSet<Log> Logs { get; set; }
 
         public DbSet<BlockedIP> BlockedIPs { get; set; }
@@ -23,6 +25,10 @@ namespace BP_OnlineDOD.Server.Data
             modelBuilder.Entity<Message>()
                 .HasMany(m => m.ChildMessages)
                 .WithOne(c => c.ParentMessage);
+
+            modelBuilder.Entity<Message>()
+                .HasMany(m => m.Attachments)
+                .WithOne(c => c.Message);
 
             modelBuilder.Entity<Log>().ToTable("Logs");
         }

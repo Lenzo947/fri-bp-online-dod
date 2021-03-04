@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BP_OnlineDOD.Server.Migrations
 {
     [DbContext(typeof(OnlineDODContext))]
-    [Migration("20210216103307_NewestMigration")]
+    [Migration("20210303164248_NewestMigration")]
     partial class NewestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,6 +18,30 @@ namespace BP_OnlineDOD.Server.Migrations
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.3");
+
+            modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Attachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("Attachments");
+                });
 
             modelBuilder.Entity("BP_OnlineDOD.Shared.Models.BlockedIP", b =>
                 {
@@ -99,6 +123,17 @@ namespace BP_OnlineDOD.Server.Migrations
                     b.ToTable("Messages");
                 });
 
+            modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Attachment", b =>
+                {
+                    b.HasOne("BP_OnlineDOD.Shared.Models.Message", "Message")
+                        .WithMany("Attachments")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+                });
+
             modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Message", b =>
                 {
                     b.HasOne("BP_OnlineDOD.Shared.Models.Message", "ParentMessage")
@@ -110,6 +145,8 @@ namespace BP_OnlineDOD.Server.Migrations
 
             modelBuilder.Entity("BP_OnlineDOD.Shared.Models.Message", b =>
                 {
+                    b.Navigation("Attachments");
+
                     b.Navigation("ChildMessages");
                 });
 #pragma warning restore 612, 618

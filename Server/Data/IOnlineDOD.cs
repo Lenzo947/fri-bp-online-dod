@@ -10,6 +10,14 @@ namespace BP_OnlineDOD.Server.Data
 
         ICollection<Log> GetAllLogs();
 
+        ICollection<Attachment> GetAllAttachments();
+
+        Attachment GetAttachmentById(int id);
+
+        void CreateAttachment(Attachment a);
+
+        void DeleteAttachment(Attachment a);
+
         ICollection<BlockedIP> GetAllBlockedIPs();
 
         BlockedIP GetBlockedIPById(int id);

@@ -24,6 +24,8 @@ namespace BP_OnlineDOD.Server.Dtos
 
         public Message ParentMessage { get; set; }
 
+        public ICollection<Attachment> Attachments { get; set; }
+
         public ICollection<Message> ChildMessages { get; set; }
     }
 }

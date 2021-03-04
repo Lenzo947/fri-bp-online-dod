@@ -33,6 +33,8 @@ namespace BP_OnlineDOD.Shared.Models
 
         public ICollection<Message> ChildMessages { get; set; }
 
+        public ICollection<Attachment> Attachments { get; set; }
+
         public Message()
         {
             this.TimeSent = DateTime.UtcNow;

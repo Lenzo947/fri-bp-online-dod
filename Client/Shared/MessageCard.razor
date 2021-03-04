@@ -38,6 +38,27 @@
         {
             <p class="card-text px-2 pt-2 pl-2">@((MarkupString) TextTransformer.Transform(msg.Text))</p>
 
+            if (msg.Attachments.Count > 0)
+            {
+                <div class="mb-2">
+                    @if (showAttachments)
+                    {
+                        <a @onclick="ToggleShowAttachments"><span class="oi oi-link-intact text-danger mr-2"></span>Skryť prílohy</a>
+                        <div class="card-footer">
+
+                            @foreach (Attachment a in msg.Attachments)
+                            {
+                                <img style="max-width: 150px" src="@a.Content" class="mr-2" />
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <a @onclick="ToggleShowAttachments"><span class="oi oi-link-intact mr-2"></span>Zobraziť prílohy (@msg.Attachments.Count)</a>
+                    }
+                </div>
+            }
+
             <AuthorizeView>
                 @if (!edit)
                 {
@@ -113,7 +134,7 @@
 
 @code {        
 
-    [CascadingParameter] 
+    [CascadingParameter]
     public IModalService Modal { get; set; }
 
     [CascadingParameter]
@@ -134,6 +155,8 @@
 
     public bool reply { get; set; } = false;
 
+    public bool showAttachments { get; set; } = false;
+
     async Task ShowDeleteModal()
     {
         var confirmForm = Modal.Show<ConfirmDelete>("Naozaj chcete zmazať správu?");
@@ -145,6 +168,10 @@
         }
     }
 
+    public void ToggleShowAttachments()
+    {
+        showAttachments = !showAttachments;
+    }
 
     public void ToggleEdit()
     {
