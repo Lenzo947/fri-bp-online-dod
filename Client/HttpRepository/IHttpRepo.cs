@@ -8,6 +8,6 @@ namespace BP_OnlineDOD.Client.HttpRepository
 {
     public interface IHttpRepo
     {
-        Task<string> UploadProductImage(MultipartFormDataContent content);
+        Task<string> UploadFile(MultipartFormDataContent content);
     }
 }

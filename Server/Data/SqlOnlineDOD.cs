@@ -116,7 +116,9 @@ namespace BP_OnlineDOD.Server.Data
 
         public Message GetMessageById(int id)
         {
-            return _context.Messages.FirstOrDefault(p => p.Id == id);
+            return _context.Messages
+                .Include(m => m.Attachments)
+                .FirstOrDefault(p => p.Id == id);
         }
 
         public bool SaveChanges()

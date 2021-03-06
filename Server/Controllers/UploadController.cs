@@ -15,7 +15,7 @@ namespace BP_OnlineDOD.Server.Controllers
             try
             {
                 var file = Request.Form.Files[0];
-                var folderName = Path.Combine("StaticFiles", "Uploads");
+                var folderName = Path.Combine("files", "uploads");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (file.Length > 0)

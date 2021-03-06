@@ -16,6 +16,6 @@ namespace BP_OnlineDOD.Server.Dtos
 
         public int MessageId { get; set; }
 
-        public Message Message { get; set; }
+        //public Message Message { get; set; }
     }
 }

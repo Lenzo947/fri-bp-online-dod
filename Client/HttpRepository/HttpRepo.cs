@@ -16,7 +16,7 @@ namespace BP_OnlineDOD.Client.HttpRepository
             _client = client;
         }
 
-        public async Task<string> UploadProductImage(MultipartFormDataContent content)
+        public async Task<string> UploadFile(MultipartFormDataContent content)
         {
             var postResult = await _client.PostAsync("api/upload", content);
             var postContent = await postResult.Content.ReadAsStringAsync();
@@ -27,8 +27,8 @@ namespace BP_OnlineDOD.Client.HttpRepository
             }
             else
             {
-                var imgUrl = Path.Combine(_client.BaseAddress.ToString(), postContent);
-                return imgUrl;
+                var fileUrl = Path.Combine(_client.BaseAddress.ToString(), postContent);
+                return fileUrl;
             }
         }
     }

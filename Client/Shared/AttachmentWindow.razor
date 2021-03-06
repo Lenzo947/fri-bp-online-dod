@@ -1,39 +1,36 @@
-﻿@using System.Net.Http.Headers;
+﻿
+<label for="attachment">Pridať prílohy</label>
+<InputFile OnChange="@HandleSelected" multiple id="attachment" class="form-control-file" />
 
-<h3>ImageUpload</h3>
-<InputFile OnChange="@HandleSelected" multiple />
-@if (ImgUrl != null)
+@if (filesToUpload.Count > 0)
 {
-    <div>
-        <img src="@ImgUrl" style="width:300px" />
-    </div>
+    foreach(var file in filesToUpload)
+    {
+        <div class="mt-1">
+            <p>@file.Name<a @onclick="() => RemoveItem(file)"><span class="oi oi-x text-danger ml-2"></span></a></p>
+        </div>
+    }
 }
 
 @code {
-    [Parameter]
-    public string ImgUrl { get; set; }
-    [Parameter]
-    public EventCallback<string> OnChange { get; set; }
-    [Inject]
-    public IHttpRepo Repository { get; set; }
-    private async Task HandleSelected(InputFileChangeEventArgs e)
-    {
-        var imageFiles = e.GetMultipleFiles();
-        foreach (var imageFile in imageFiles)
-        {
-            if (imageFile != null)
-            {
-                var resizedFile = await imageFile.RequestImageFileAsync("image/png", 4096, 4096);
 
-                using (var ms = resizedFile.OpenReadStream(resizedFile.Size))
-                {
-                    var content = new MultipartFormDataContent();
-                    content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
-                    content.Add(new StreamContent(ms, Convert.ToInt32(resizedFile.Size)), "image", imageFile.Name);
-                    ImgUrl = await Repository.UploadProductImage(content);
-                    await OnChange.InvokeAsync(ImgUrl);
-                }
+    [CascadingParameter]
+    private ICollection<IBrowserFile> filesToUpload { get; set; }
+
+    private void HandleSelected(InputFileChangeEventArgs e)
+    {
+        foreach(var file in e.GetMultipleFiles())
+        {
+            if (!filesToUpload.Contains(file))
+            {
+                filesToUpload.Add(file);
             }
         }
+
+    }
+
+    private void RemoveItem(IBrowserFile file)
+    {
+        filesToUpload.Remove(file);
     }
 }

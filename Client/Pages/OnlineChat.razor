@@ -3,6 +3,9 @@
 @inject NavigationManager navigationManager
 @inject IJSRuntime JS
 @inject ILocalStorageService localStorage
+@inject IHttpRepo httpRepository 
+@using System.Net.Http.Headers;
+@using HeyRed.Mime;
 
 <h1>Online deň otvorených dverí</h1>
 <p>
@@ -25,20 +28,22 @@
 
     @if (Attachment)
     {
-        <AttachmentWindow />
+        <CascadingValue Value="filesToUpload">
+            <AttachmentWindow />
+        </CascadingValue>
     }
-    
-<div class="mb-5 mt-2">
-    <button type="submit" class="btn btn-primary btn-sm mr-2"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
-    @if (Attachment)
-    {
-        <a @onclick="ToggleAttach"><span class="oi oi-link-intact text-danger mr-2"></span>Zrušiť prílohy</a>
-    }
-    else
-    {
-        <a @onclick="ToggleAttach"><span class="oi oi-link-intact mr-2"></span>Pridať prílohy</a>
-    }
-</div>
+
+    <div class="mb-5 mt-2">
+        <button type="submit" class="btn btn-primary btn-sm mr-2"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
+        @if (Attachment)
+        {
+            <a @onclick="ToggleAttach"><span class="oi oi-link-intact text-danger mr-2"></span>Zrušiť prílohy</a>
+        }
+        else
+        {
+            <a @onclick="ToggleAttach"><span class="oi oi-link-intact mr-2"></span>Pridať prílohy</a>
+        }
+    </div>
 </EditForm>
 
 @if (Messages != null) // wait for all messages to load first
@@ -64,6 +69,10 @@ else
     public IList<int> UpvotedMessages { get; set; } = new List<int>();
 
     public bool Attachment { get; set; } = false;
+
+    public ICollection<IBrowserFile> filesToUpload { get; set; } = new List<IBrowserFile>();
+
+    public ICollection<string> fileUrls { get; set; } = new List<string>();
 
     public string Author { get; set; } = "";
 
@@ -174,6 +183,13 @@ else
 
         if (response.IsSuccessStatusCode)
         {
+            if (filesToUpload.Count > 0)
+            {
+                var msg = await response.Content.ReadFromJsonAsync<Message>();
+                
+                await UploadFiles(msg.Id);
+            }
+
             ClearFields();
 
             await Load();
@@ -191,4 +207,35 @@ else
         Attachment = false;
     }
 
+    private async Task UploadFiles(int msgId)
+    {
+        string newFileUrl;
+
+        Console.WriteLine(msgId);
+
+        foreach (var file in filesToUpload)
+        {
+            if (file != null)
+            {
+                //var resizedFile = await imageFile.RequestImageFileAsync("image/png", 4096, 4096);
+
+                using (var ms = file.OpenReadStream(file.Size))
+                {
+                    var content = new MultipartFormDataContent();
+                    content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
+                    content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), MimeTypesMap.GetMimeType(file.Name), file.Name);
+
+                    newFileUrl = await httpRepository.UploadFile(content);
+                    fileUrls.Add(newFileUrl);
+
+                    //await OnChange.InvokeAsync(newFileUrl);
+                }
+
+                var payload = new { ContentType = MimeTypesMap.GetMimeType(newFileUrl), Content = newFileUrl.Substring(newFileUrl.LastIndexOf("/files") + 1), MessageId = msgId };
+
+                var response = await httpClient.PostAsJsonAsync("api/attachments", payload);
+            }
+        }
+
+    }
 }

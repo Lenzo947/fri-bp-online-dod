@@ -4,8 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # .NET static files
-Server/StaticFiles/uploads/*
-!Server/StaticFiles/uploads/.gitkeep 
+Server/files/uploads/*
+!Server/files/uploads/.gitkeep 
 
 # Environment variables
 *.env

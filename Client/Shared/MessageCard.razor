@@ -26,56 +26,69 @@
 
         }
 
-    <div class="clearfix">
-        @if (msg.Deleted)
-        {
-            <p class="card-text text-muted px-2 pt-2 pl-2">Správa bola zmazaná, odpovede sú skryté</p>
-            <AuthorizeView>
-                <button @onclick="Renew" type="button" class="btn btn-sm btn-outline-success"><span class="oi oi-trash mr-2"></span>Obnoviť</button>
-            </AuthorizeView>
-        }
-        else
-        {
-            <p class="card-text px-2 pt-2 pl-2">@((MarkupString) TextTransformer.Transform(msg.Text))</p>
-
-            if (msg.Attachments.Count > 0)
+        <div class="clearfix">
+            @if (msg.Deleted)
             {
-                <div class="mb-2">
-                    @if (showAttachments)
-                    {
-                        <a @onclick="ToggleShowAttachments"><span class="oi oi-link-intact text-danger mr-2"></span>Skryť prílohy</a>
-                        <div class="card-footer">
-
-                            @foreach (Attachment a in msg.Attachments)
-                            {
-                                <img style="max-width: 150px" src="@a.Content" class="mr-2" />
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <a @onclick="ToggleShowAttachments"><span class="oi oi-link-intact mr-2"></span>Zobraziť prílohy (@msg.Attachments.Count)</a>
-                    }
-                </div>
+                <p class="card-text text-muted px-2 pt-2 pl-2">Správa bola zmazaná, odpovede sú skryté</p>
+                <AuthorizeView>
+                    <button @onclick="Renew" type="button" class="btn btn-sm btn-outline-success"><span class="oi oi-trash mr-2"></span>Obnoviť</button>
+                </AuthorizeView>
             }
+            else
+            {
+                <p class="card-text px-2 pt-2">@((MarkupString) TextTransformer.Transform(msg.Text))</p>
 
-            <AuthorizeView>
-                @if (!edit)
+                if (msg.Attachments.Count > 0)
                 {
-                    <button @onclick="ToggleEdit" type="button" class="btn btn-sm btn-outline-primary mr-2"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+                    <div class="mb-2">
+                        @if (showAttachments)
+                        {
+                            <a @onclick="ToggleShowAttachments"><span class="oi oi-link-intact text-danger mr-2"></span>Skryť prílohy</a>
+                            <div class="card-footer">
+                                @if (imageAttachments.Count > 0)
+                                {
+                                    <div class="mb-2">
+                                        @foreach (Attachment a in imageAttachments)
+                                        {
+                                            <a href="@a.Content" class="mr-2"><img style="max-width: 150px" src="@a.Content" alt="" /></a>
+                                        }
+                                    </div>
+                                }
+                                @if (otherAttachments.Count > 0)
+                                {
+                                    foreach(Attachment a in otherAttachments)
+                                    {
+                                        <div>
+                                            <a href="@a.Content" class="mr-2"><span class="oi oi-document mr-2"></span>@a.Content.Substring(a.Content.LastIndexOf('\\') + 1)</a>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <a @onclick="ToggleShowAttachments"><span class="oi oi-link-intact mr-2"></span>Zobraziť prílohy (@msg.Attachments.Count)</a>
+                        }
+                    </div>
                 }
 
-                <button @onclick="ShowDeleteModal" type="button" class="btn btn-sm btn-outline-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
-            </AuthorizeView>
+                <AuthorizeView>
+                    @if (!edit)
+                    {
+                        <button @onclick="ToggleEdit" type="button" class="btn btn-sm btn-outline-primary mr-2"><span class="oi oi-pencil mr-2"></span>Upraviť</button>
+                    }
+
+                    <button @onclick="ShowDeleteModal" type="button" class="btn btn-sm btn-outline-danger"><span class="oi oi-trash mr-2"></span>Odstrániť</button>
+                </AuthorizeView>
 
 
-            if (!reply)
-            {
-                <button @onclick="ToggleReply" type="button" class="btn btn-sm btn-primary float-right"><span class="oi oi-comment-square mr-2"></span>Odpovedať</button>
+                if (!reply)
+                {
+                    <button @onclick="ToggleReply" type="button" class="btn btn-sm btn-primary float-right"><span class="oi oi-comment-square mr-2"></span>Odpovedať</button>
+                }
             }
-        }
 
-    </div>
+        </div>
 
         @if (edit)
         {
@@ -132,7 +145,7 @@
     </div>
 </div>
 
-@code {        
+@code {
 
     [CascadingParameter]
     public IModalService Modal { get; set; }
@@ -156,6 +169,37 @@
     public bool reply { get; set; } = false;
 
     public bool showAttachments { get; set; } = false;
+
+    public ICollection<Attachment> imageAttachments { get; set; }
+
+    public ICollection<Attachment> otherAttachments { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (msg.Attachments.Count > 0)
+        {
+            ICollection<Attachment> others = new List<Attachment>();
+            ICollection<Attachment> images = new List<Attachment>();
+
+            foreach (Attachment a in msg.Attachments)
+            {
+                if (a.ContentType.Contains("image"))
+                {
+                    images.Add(a);
+
+                }
+                else
+                {
+                    others.Add(a);
+                }
+            }
+
+            imageAttachments = images;
+            otherAttachments = others;
+        }
+    }
 
     async Task ShowDeleteModal()
     {
@@ -274,7 +318,7 @@
 
             if (!UpvotedMessages.Contains(msg.Id))
             {
-                var changes = new { ThumbsUpCount =_msg.ThumbsUpCount + 1 };
+                var changes = new { ThumbsUpCount = _msg.ThumbsUpCount + 1 };
 
                 StringContent payload = changes.ToPatchJsonContent();
 
