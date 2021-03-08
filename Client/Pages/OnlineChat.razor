@@ -1,11 +1,5 @@
 ﻿@page "/online-chat"
-@inject HttpClient httpClient
-@inject NavigationManager navigationManager
-@inject IJSRuntime JS
 @inject ILocalStorageService localStorage
-@inject IHttpRepo httpRepository 
-@using System.Net.Http.Headers;
-@using HeyRed.Mime;
 
 <h1>Online deň otvorených dverí</h1>
 <p>
@@ -14,73 +8,33 @@
 
 <hr class="mb-4" />
 
-<EditForm Model="MessageModel" OnValidSubmit="Add">
 
-    <DataAnnotationsValidator />
-
-    <label for="author">Meno</label>
-    <InputText @bind-Value="MessageModel.Author" class="form-control mb-2" id="author" placeholder="Anonym"></InputText>
-
-    <label for="title">Správa</label>
-    <InputTextArea @bind-Value="MessageModel.Text" class="form-control mb-2" id="title" placeholder="Správa..." rows="5"
-                   oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputTextArea>
-    <ValidationMessage For="@(() => MessageModel.Text)" />
-
-    @if (Attachment)
-    {
-        <CascadingValue Value="filesToUpload">
-            <AttachmentWindow />
-        </CascadingValue>
-    }
-
-    <div class="mb-5 mt-2">
-        <button type="submit" class="btn btn-primary btn-sm mr-2"><span class="oi oi-envelope-closed mr-2"></span>Odoslať</button>
-        @if (Attachment)
+<CascadingValue Value="Author">
+    <CascadingValue Value="UpvotedMessages">
+        @if(loaded)
         {
-            <a @onclick="ToggleAttach"><span class="oi oi-link-intact text-danger mr-2"></span>Zrušiť prílohy</a>
-        }
-        else
-        {
-            <a @onclick="ToggleAttach"><span class="oi oi-link-intact mr-2"></span>Pridať prílohy</a>
-        }
-    </div>
-</EditForm>
+            <MessageForm AddedMessage="AddMessage" />
 
-@if (Messages != null) // wait for all messages to load first
-{
-    foreach (Message msg in Messages.Reverse())
-    {
-        if (msg.ParentMessageId == null)
-        {
-            <CascadingValue Value="Author">
-                <CascadingValue Value="UpvotedMessages">
-                    <MessageCard msg="@msg" Classes="mb-4" />
-                </CascadingValue>
-            </CascadingValue>
+            <MessagesList @ref="List">
+                <NoMessages>
+                    <h1 class="text-center">@NoMessages</h1>
+                </NoMessages>
+            </MessagesList>
         }
-    }
-}
-else
-{
-    <SpinnerBig Classes="text-primary mb-4" />
-}
+    </CascadingValue>
+</CascadingValue>
 
 @code {
+
+    MessagesList List;
+
     public IList<int> UpvotedMessages { get; set; } = new List<int>();
-
-    public bool Attachment { get; set; } = false;
-
-    public ICollection<IBrowserFile> filesToUpload { get; set; } = new List<IBrowserFile>();
-
-    public ICollection<string> fileUrls { get; set; } = new List<string>();
 
     public string Author { get; set; } = "";
 
-    private Timer _timer { get; set; }
+    bool loaded = false;
 
-    protected Message MessageModel { get; set; } = new Message();
-
-    public virtual ICollection<Message> Messages { get; set; }
+    private string NoMessages { get; set; } = "Nie sú pridané žiadne správy";
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,140 +56,11 @@ else
             Author = await localStorage.GetItemAsync<string>("author");
         }
 
-        MessageModel.Author = Author;
-
-        await Load();
-
-        _timer = new Timer(5000);
-        _timer.Elapsed += async (s, e) =>
-        {
-            await InvokeAsync(Load);
-        };
-        _timer.Enabled = true;
-
+        loaded = true;
     }
 
-    protected async Task Load()
+    private void AddMessage(Message msg)
     {
-
-        Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
-
-        StateHasChanged();
-
-        //var _messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
-
-        //if (Messages != null)
-        //{
-        //    bool found;
-        //    for (int i = 0; i < _messages.Count; i++)
-        //    {
-        //        found = false;
-        //        var newMsg = _messages.ElementAt(i);
-        //        int j;
-
-        //        for (j = 0; j < Messages.Count; j++)
-        //        {
-        //            var msg = Messages.ElementAt(j);
-
-        //            if (newMsg.Id == msg.Id && (newMsg.Author != msg.Author || newMsg.Text != msg.Text || newMsg.ThumbsUpCount != msg.ThumbsUpCount || newMsg.Deleted != msg.Deleted))
-        //            {
-        //                Messages.Remove(msg);
-        //                Messages.Add(newMsg);
-        //                found = true;
-        //                break;
-        //            }
-        //        }
-
-        //        if (!found)
-        //        {
-        //            Messages.Add(newMsg);
-        //        }
-        //    }
-
-        //    Messages = Messages.OrderBy(msg => msg.TimeSent).ToList();
-
-        //    StateHasChanged();
-        //}
-        //else
-        //{
-        //    Messages = _messages;
-        //}
-
-
-        //await JS.InvokeVoidAsync("checkResize");
-    }
-
-    protected async Task Add()
-    {
-        if (MessageModel.Author == "")
-        {
-            MessageModel.Author = "Anonym";
-        }
-        else
-        {
-            Author = MessageModel.Author;
-            await localStorage.SetItemAsync<string>("author", MessageModel.Author);
-        }
-
-        var payload = new { Author = MessageModel.Author, Text = MessageModel.Text };
-
-        var response = await httpClient.PostAsJsonAsync("api/messages", payload);
-
-        if (response.IsSuccessStatusCode)
-        {
-            if (filesToUpload.Count > 0)
-            {
-                var msg = await response.Content.ReadFromJsonAsync<Message>();
-                
-                await UploadFiles(msg.Id);
-            }
-
-            ClearFields();
-
-            await Load();
-        }
-    }
-
-    protected void ToggleAttach()
-    {
-        Attachment = !Attachment;
-    }
-
-    protected void ClearFields()
-    {
-        MessageModel.Text = null;
-        Attachment = false;
-    }
-
-    private async Task UploadFiles(int msgId)
-    {
-        string newFileUrl;
-
-        Console.WriteLine(msgId);
-
-        foreach (var file in filesToUpload)
-        {
-            if (file != null)
-            {
-                //var resizedFile = await imageFile.RequestImageFileAsync("image/png", 4096, 4096);
-
-                using (var ms = file.OpenReadStream(file.Size))
-                {
-                    var content = new MultipartFormDataContent();
-                    content.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data");
-                    content.Add(new StreamContent(ms, Convert.ToInt32(file.Size)), MimeTypesMap.GetMimeType(file.Name), file.Name);
-
-                    newFileUrl = await httpRepository.UploadFile(content);
-                    fileUrls.Add(newFileUrl);
-
-                    //await OnChange.InvokeAsync(newFileUrl);
-                }
-
-                var payload = new { ContentType = MimeTypesMap.GetMimeType(newFileUrl), Content = newFileUrl.Substring(newFileUrl.LastIndexOf("/files") + 1), MessageId = msgId };
-
-                var response = await httpClient.PostAsJsonAsync("api/attachments", payload);
-            }
-        }
-
+        List.Messages.Add(msg);
     }
 }

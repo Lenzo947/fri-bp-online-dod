@@ -2,35 +2,13 @@
 <label for="attachment">Pridať prílohy</label>
 <InputFile OnChange="@HandleSelected" multiple id="attachment" class="form-control-file" />
 
-@if (filesToUpload.Count > 0)
-{
-    foreach(var file in filesToUpload)
-    {
-        <div class="mt-1">
-            <p>@file.Name<a @onclick="() => RemoveItem(file)"><span class="oi oi-x text-danger ml-2"></span></a></p>
-        </div>
-    }
-}
-
 @code {
 
-    [CascadingParameter]
-    private ICollection<IBrowserFile> filesToUpload { get; set; }
+    [Parameter]
+    public EventCallback<ICollection<IBrowserFile>> AddAttachments { get; set; }
 
     private void HandleSelected(InputFileChangeEventArgs e)
     {
-        foreach(var file in e.GetMultipleFiles())
-        {
-            if (!filesToUpload.Contains(file))
-            {
-                filesToUpload.Add(file);
-            }
-        }
-
-    }
-
-    private void RemoveItem(IBrowserFile file)
-    {
-        filesToUpload.Remove(file);
+        AddAttachments.InvokeAsync(e.GetMultipleFiles().ToList());
     }
 }

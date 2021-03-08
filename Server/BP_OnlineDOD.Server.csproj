@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="StaticFiles\**" />
+    <Content Remove="StaticFiles\**" />
+    <EmbeddedResource Remove="StaticFiles\**" />
+    <None Remove="StaticFiles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="HtmlSanitizer" Version="5.0.376" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" />
@@ -32,10 +39,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\BP_OnlineDOD.Client.csproj" />
     <ProjectReference Include="..\Shared\BP_OnlineDOD.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="StaticFiles\Uploads\" />
   </ItemGroup>
 
 

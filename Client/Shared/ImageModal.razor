@@ -1,0 +1,15 @@
+﻿<a href="@imgUrl" target="_blank"><img class="img-fluid" src="@imgUrl" alt="" /></a>
+
+
+
+@code {
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter]
+    public string imgUrl { get; set; }
+
+    async Task Cancel() => await BlazoredModal.CancelAsync();
+
+}
