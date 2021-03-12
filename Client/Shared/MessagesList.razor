@@ -1,4 +1,5 @@
 ﻿@inject HttpClient httpClient
+@implements IDisposable
 
 @if (Messages != null && Messages.Count > 0) // wait for all messages to load first
 {
@@ -44,10 +45,18 @@ else
         _timer = new Timer(5000);
         _timer.Elapsed += async (s, e) =>
         {
-            await InvokeAsync(Load);
+            await Load();
         };
         _timer.Enabled = true;
 
+    }
+
+    public void Dispose()
+    {
+        if (_timer != null)
+        {
+            _timer.Dispose();
+        }
     }
 
     public async Task Load()

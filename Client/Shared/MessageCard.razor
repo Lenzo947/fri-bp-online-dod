@@ -334,19 +334,13 @@
     {
         if (UpvotedMessages != null)
         {
-            var _msg = await httpClient.GetFromJsonAsync<Message>($"api/messages/{msg.Id}");
-
             if (!UpvotedMessages.Contains(msg.Id))
             {
-                var changes = new { ThumbsUpCount = _msg.ThumbsUpCount + 1 };
-
-                StringContent payload = changes.ToPatchJsonContent();
-
-                var response = await httpClient.PatchAsync($"api/messages/{msg.Id}", payload);
+                var response = await httpClient.PutAsync($"api/messages/upvotes/{msg.Id}", null);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    msg.ThumbsUpCount = changes.ThumbsUpCount;
+                    msg.ThumbsUpCount++;
 
                     UpvotedMessages.Add(msg.Id);
 
@@ -357,15 +351,11 @@
             }
             else
             {
-                var changes = new { ThumbsUpCount = _msg.ThumbsUpCount - 1 };
-
-                StringContent payload = changes.ToPatchJsonContent();
-
-                var response = await httpClient.PatchAsync($"api/messages/{msg.Id}", payload);
+                var response = await httpClient.DeleteAsync($"api/messages/upvotes/{msg.Id}");
 
                 if (response.IsSuccessStatusCode)
                 {
-                    msg.ThumbsUpCount = changes.ThumbsUpCount;
+                    msg.ThumbsUpCount--;
 
                     UpvotedMessages.Remove(msg.Id);
 

@@ -4,11 +4,27 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="StaticFiles\**" />
     <Content Remove="StaticFiles\**" />
     <EmbeddedResource Remove="StaticFiles\**" />
     <None Remove="StaticFiles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="files\profanities.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="profanities.txt">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

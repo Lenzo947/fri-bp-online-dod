@@ -1,8 +1,11 @@
 ﻿@inject NavigationManager NavigationManager
+@inject LazyAssemblyLoader LazyLoader
+@using Microsoft.AspNetCore.Components.WebAssembly.Services
+@using System.Reflection 
 
 <CascadingAuthenticationState>
     <CascadingBlazoredModal>
-        <Router AppAssembly="@typeof(Program).Assembly">
+        <Router AppAssembly="@typeof(Program).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="lazyLoadedAssemblies">
             <Found Context="routeData">
                 <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                     <Authorizing>
@@ -23,3 +26,21 @@
         </Router>
     </CascadingBlazoredModal>
 </CascadingAuthenticationState>
+
+@code {
+
+    private List<Assembly> lazyLoadedAssemblies = new List<Assembly>();
+
+    private async Task OnNavigateAsync(NavigationContext args)
+    {
+        if (args.Path.EndsWith("online-chat"))
+        {
+            var assemblies = await LazyLoader.LoadAssembliesAsync(new List<string>
+            {
+                "MimeTypesMap.dll"
+            });
+
+            lazyLoadedAssemblies.AddRange(assemblies);
+        }
+    }
+}

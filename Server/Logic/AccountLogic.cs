@@ -25,8 +25,8 @@ namespace BP_OnlineDOD.Server.Logic
         {
             new User{
                 Id = 1,
-                FirstName = "Meno",
-                LastName = "Priezvisko",
+                FirstName = "Admin",
+                LastName = "Konto",
                 Email = Environment.GetEnvironmentVariable("WEB_LOGIN") ?? "admin",
                 Password= Environment.GetEnvironmentVariable("WEB_PASSWORD") ?? "admin",
                 PhoneNumber="8888899999"
