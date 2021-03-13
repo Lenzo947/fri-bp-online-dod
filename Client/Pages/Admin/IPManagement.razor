@@ -1,5 +1,5 @@
 ﻿@page "/ip-management"
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 
@@ -15,7 +15,7 @@
     <label for="title">Blokovať IP adresu</label>
 
     <InputText @bind-Value="BlockedIPModel.Address" class="form-control mb-2" id="title" placeholder="Adresa..." rows="1"
-                   oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputText>
+               oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';"></InputText>
 
     <ValidationMessage For="@(() => BlockedIPModel.Address)" />
 
@@ -36,7 +36,7 @@
         <tbody class="text-center">
             @foreach (BlockedIP ip in BlockedIPs.Reverse())
             {
-               <BlockedIPRow ip="@ip" />
+                <BlockedIPRow ip="@ip" />
             }
         </tbody>
     </table>

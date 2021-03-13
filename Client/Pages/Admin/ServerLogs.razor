@@ -1,5 +1,5 @@
 ﻿@page "/server-logs"
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
 

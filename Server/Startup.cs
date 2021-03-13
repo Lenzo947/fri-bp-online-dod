@@ -94,6 +94,8 @@ namespace BP_OnlineDOD.Server
                 return filter;
             });
 
+            services.AddTransient<SampleData>();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
         }

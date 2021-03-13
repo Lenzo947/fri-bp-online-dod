@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BP_OnlineDOD.Server.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,7 @@ namespace BP_OnlineDOD.Server
     public class Program
     {
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             //var server = Environment.GetEnvironmentVariable("DB_ADDRESS") ?? "localhost";
             //var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
@@ -48,6 +49,9 @@ namespace BP_OnlineDOD.Server
                 {
                     dbContext.Database.Migrate();
                 }
+
+                var dataSeeder = services.GetService<SampleData>();
+                dataSeeder.SeedAdminUser();
             }
             catch (Exception ex)
             {

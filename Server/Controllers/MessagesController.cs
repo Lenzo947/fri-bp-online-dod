@@ -7,17 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using ProfanityFilter.Interfaces;
 using Ganss.XSS;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BP_OnlineDOD.Server.Controllers
 {
 
     [ApiController]
     [Route("api/messages")]
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public class MessagesController : ControllerBase
     {
         private readonly IOnlineDOD _onlineDOD;
@@ -40,8 +37,9 @@ namespace BP_OnlineDOD.Server.Controllers
         {
             ICollection<Message> messageItems;
 
-            if(!User.IsInRole("Admin")) // <--- INVERT CONDITION AFTER ROLES ARE IMPLEMENTED
+            if(User.IsInRole("Admin")) // Doesn't seem to work when calling from client
             {
+                
                 messageItems = _onlineDOD.GetAllMessagesWithDeleted();
             }
             else
@@ -142,7 +140,6 @@ namespace BP_OnlineDOD.Server.Controllers
         }
 
         [HttpDelete("hide/{id}")]
-        [AllowAnonymous] // <-- DELETE THIS AFTER ROLES ARE IMPLEMENTED
         public ActionResult HideMessage(int id)
         {
 
@@ -159,7 +156,6 @@ namespace BP_OnlineDOD.Server.Controllers
         }
 
         [HttpDelete("renew/{id}")]
-        [AllowAnonymous] // <-- DELETE THIS AFTER ROLES ARE IMPLEMENTED
         public ActionResult RenewMessage(int id)
         {
 
