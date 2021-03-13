@@ -1,15 +1,18 @@
 ﻿using AutoMapper;
 using BP_OnlineDOD.Server.Data;
-using BP_OnlineDOD.Server.Dtos;
+using BP_OnlineDOD.Shared.DTOs;
 using BP_OnlineDOD.Shared.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace BP_OnlineDOD.Server.Controllers
 {
-    [Route("api/blocked-ips")]
     [ApiController]
+    [Route("api/blocked-ips")]
+    [Authorize(Roles = "Admin")]
     public class BlockedIPsController : ControllerBase
     {
         private readonly IOnlineDOD _onlineDOD;

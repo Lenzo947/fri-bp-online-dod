@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BP_OnlineDOD.Server.Data;
-using BP_OnlineDOD.Server.Dtos;
+using BP_OnlineDOD.Shared.DTOs;
 using BP_OnlineDOD.Shared.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +10,14 @@ using Ganss.XSS;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BP_OnlineDOD.Server.Controllers
 {
 
-    [Route("api/messages")]
     [ApiController]
+    [Route("api/messages")]
+    //[Authorize(Roles = "Admin")]
     public class MessagesController : ControllerBase
     {
         private readonly IOnlineDOD _onlineDOD;
@@ -33,25 +35,40 @@ namespace BP_OnlineDOD.Server.Controllers
 
         //GET api/messages
         [HttpGet]
-        public ActionResult<IEnumerable<MessageReadDto>> GetAllMessages()
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<Message>> GetAllMessages()
         {
-            //Serilog.Log.Information("GET /api/messages");
+            ICollection<Message> messageItems;
 
-            var messageItems = _onlineDOD.GetAllMessages();
+            if(!User.IsInRole("Admin")) // <--- INVERT CONDITION AFTER ROLES ARE IMPLEMENTED
+            {
+                messageItems = _onlineDOD.GetAllMessagesWithDeleted();
+            }
+            else
+            {
+                messageItems = _onlineDOD.GetAllMessages();
+            }
 
-            return Ok(_mapper.Map<IEnumerable<MessageReadDto>>(messageItems));
+            return Ok(messageItems);
         }
 
         //GET api/messages/{id}
         [HttpGet("{id}", Name = "GetMessageById")]
-        public ActionResult<MessageReadDto> GetMessageById(int id)
+        [AllowAnonymous]
+        public ActionResult<Message> GetMessageById(int id)
         {
-            //Serilog.Log.Information($"GET /api/messages/{id}");
-
             var messageItem = _onlineDOD.GetMessageById(id);
             if (messageItem != null)
             {
-                return Ok(_mapper.Map<MessageReadDto>(messageItem));
+                if (messageItem.Deleted)
+                {
+                    if (!User.IsInRole("Admin"))
+                    {
+                        return NotFound();
+                    }
+                }
+
+                return Ok(messageItem);
             }
 
             return NotFound();
@@ -59,7 +76,8 @@ namespace BP_OnlineDOD.Server.Controllers
 
         //POST api/messages
         [HttpPost]
-        public ActionResult<MessageReadDto> CreateMessage(MessageCreateDto messageCreateDto)
+        [AllowAnonymous]
+        public ActionResult<Message> CreateMessage(MessageCreateDto messageCreateDto)
         {
             messageCreateDto.Text =  _htmlSanitizer.Sanitize(_profanityFilter.CensorString(messageCreateDto.Text));
             messageCreateDto.Author = _htmlSanitizer.Sanitize(_profanityFilter.CensorString(messageCreateDto.Author));
@@ -74,11 +92,7 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.CreateMessage(messageModel);
             _onlineDOD.SaveChanges();
 
-            var messageReadDto = _mapper.Map<MessageReadDto>(messageModel);
-
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] POST /api/messages -> ID - {messageReadDto.Id}");
-
-            return CreatedAtRoute(nameof(GetMessageById), new { Id = messageReadDto.Id }, messageReadDto);
+            return CreatedAtRoute(nameof(GetMessageById), new { Id = messageModel.Id }, messageModel);
         }
 
         //PUT api/messages/{id}
@@ -98,8 +112,6 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.UpdateMessage(messageModel);
             _onlineDOD.SaveChanges();
 
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] PUT /api/messages/{id}");
-
             return NoContent();
         }
 
@@ -107,7 +119,6 @@ namespace BP_OnlineDOD.Server.Controllers
         [HttpPatch("{id}")]
         public ActionResult PartialMessageUpdate(int id, JsonPatchDocument<MessageUpdateDto> patchDoc)
         {
-
             var messageModel = _onlineDOD.GetMessageById(id);
             if (messageModel == null)
             {
@@ -127,14 +138,12 @@ namespace BP_OnlineDOD.Server.Controllers
             _onlineDOD.UpdateMessage(messageModel);
             _onlineDOD.SaveChanges();
 
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] PATCH /api/messages/{id}");
-
             return NoContent();
         }
 
-        //DELETE api/messages/{id}
-        [HttpDelete("{id}")]
-        public ActionResult DeleteMessage(int id)
+        [HttpDelete("hide/{id}")]
+        [AllowAnonymous] // <-- DELETE THIS AFTER ROLES ARE IMPLEMENTED
+        public ActionResult HideMessage(int id)
         {
 
             var messageModel = _onlineDOD.GetMessageById(id);
@@ -143,10 +152,61 @@ namespace BP_OnlineDOD.Server.Controllers
                 return NotFound();
             }
 
-            _onlineDOD.DeleteMessage(messageModel);
+            _onlineDOD.HideMessage(messageModel);
             _onlineDOD.SaveChanges();
 
-            //Serilog.Log.Information($"[{this.Request.Host.Host}] DELETE /api/messages/{id}");
+            return NoContent();
+        }
+
+        [HttpDelete("renew/{id}")]
+        [AllowAnonymous] // <-- DELETE THIS AFTER ROLES ARE IMPLEMENTED
+        public ActionResult RenewMessage(int id)
+        {
+
+            var messageModel = _onlineDOD.GetMessageById(id);
+            if (messageModel == null)
+            {
+                return NotFound();
+            }
+
+            _onlineDOD.RenewMessage(messageModel);
+            _onlineDOD.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpPost("upvote/{id}")]
+        [AllowAnonymous]
+        public ActionResult<Message> UpvoteMessage(int id)
+        {
+            var messageModel = _onlineDOD.GetMessageById(id);
+            if (messageModel == null)
+            {
+                return NotFound();
+            }
+
+            messageModel.ThumbsUpCount++;
+
+            _onlineDOD.UpdateMessage(messageModel);
+            _onlineDOD.SaveChanges();
+
+            return NoContent();
+        }
+
+        [HttpPost("cancel-upvote/{id}")]
+        [AllowAnonymous]
+        public ActionResult<Message> CancelUpvote(int id)
+        {
+            var messageModel = _onlineDOD.GetMessageById(id);
+            if (messageModel == null)
+            {
+                return NotFound();
+            }
+
+            messageModel.ThumbsUpCount--;
+
+            _onlineDOD.UpdateMessage(messageModel);
+            _onlineDOD.SaveChanges();
 
             return NoContent();
         }

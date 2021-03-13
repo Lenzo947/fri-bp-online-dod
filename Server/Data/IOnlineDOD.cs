@@ -34,7 +34,9 @@ namespace BP_OnlineDOD.Server.Data
 
         void UpdateMessage(Message msg);
 
-        void DeleteMessage(Message msg);
+        void HideMessage(Message msg);
 
+        void RenewMessage(Message msg);
+        ICollection<Message> GetAllMessagesWithDeleted();
     }
 }

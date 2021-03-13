@@ -65,14 +65,24 @@ namespace BP_OnlineDOD.Server.Data
             _context.BlockedIPs.Remove(ip);
         }
 
-        public void DeleteMessage(Message msg)
+        public void HideMessage(Message msg)
         {
             if (msg == null)
             {
                 throw new ArgumentNullException(nameof(msg));
             }
 
-            _context.Messages.Remove(msg);
+            _context.Messages.Where(m => m.Id == msg.Id).FirstOrDefault().Deleted = true;
+        }
+
+        public void RenewMessage(Message msg)
+        {
+            if (msg == null)
+            {
+                throw new ArgumentNullException(nameof(msg));
+            }
+
+            _context.Messages.Where(m => m.Id == msg.Id).FirstOrDefault().Deleted = false;
         }
 
         public ICollection<Attachment> GetAllAttachments()
@@ -96,7 +106,20 @@ namespace BP_OnlineDOD.Server.Data
                 .Messages
                 .Include(m => m.ChildMessages)
                 .Include(m => m.Attachments)
-                //.Where(m => m.Deleted == false)
+                .Where(m => m.Deleted == false)
+                .ToList();
+
+            return result;
+
+            //return _context.Messages.ToList();
+        }
+
+        public ICollection<Message> GetAllMessagesWithDeleted()
+        {
+            var result = _context
+                .Messages
+                .Include(m => m.ChildMessages)
+                .Include(m => m.Attachments)
                 .ToList();
 
             return result;

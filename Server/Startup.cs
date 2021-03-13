@@ -15,14 +15,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Ganss.XSS;
-using BP_OnlineDOD.Server.Logic;
-using BP_OnlineDOD.Server.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using BP_OnlineDOD.Server.Helpers;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BP_OnlineDOD.Server
 {
@@ -35,6 +37,8 @@ namespace BP_OnlineDOD.Server
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             builder.AddEnvironmentVariables();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             Configuration = builder.Build();
         }
@@ -54,8 +58,22 @@ namespace BP_OnlineDOD.Server
 
             var connectionString = $"server={server}; port={port}; database={database}; user={user}; password={password}; Persist Security Info=False; Connect Timeout=300";
 
-            services.AddDbContextPool<OnlineDODContext>(opt => opt.UseMySql
+            services.AddDbContext<OnlineDODContext>(opt => opt.UseMySql
                 (connectionString, ServerVersion.AutoDetect(connectionString)));
+
+            services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+            })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<OnlineDODContext>();
+
+            services.AddIdentityServer()
+                .AddApiAuthorization<IdentityUser, OnlineDODContext>()
+                .AddProfileService<IdentityProfileService>();
+
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
 
             services.AddControllers().AddNewtonsoftJson(s =>
             {
@@ -68,30 +86,12 @@ namespace BP_OnlineDOD.Server
             services.AddSingleton<IHtmlSanitizer, HtmlSanitizer>(_ => new HtmlSanitizer(new HashSet<string>(allowedHTMLTags)));
 
             services.AddScoped<IOnlineDOD, SqlOnlineDOD>();
-            services.AddScoped<IAccountLogic, AccountLogic>();
 
             services.AddSingleton<ProfanityFilter.Interfaces.IProfanityFilter>(provider =>
             {
                 var filter = new ProfanityFilter.ProfanityFilter();
                 filter.AddProfanity(profanities);
                 return filter;
-            });
-
-            services.Configure<TokenSettings>(Configuration.GetSection("TokenSettings"));
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidIssuer = Configuration.GetSection("TokenSettings").GetValue<string>("Issuer"),
-                    ValidateIssuer = true,
-                    ValidAudience = Configuration.GetSection("TokenSettings").GetValue<string>("Audience"),
-                    ValidateAudience = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetSection("TokenSettings").GetValue<string>("Key"))),
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true
-                };
             });
 
             services.AddControllersWithViews();
@@ -117,6 +117,7 @@ namespace BP_OnlineDOD.Server
 
             app.UseRouting();
             app.UseAuthentication();
+            app.UseIdentityServer();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

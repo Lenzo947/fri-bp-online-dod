@@ -3,29 +3,34 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Services
 @using System.Reflection 
 
-<CascadingAuthenticationState>
-    <CascadingBlazoredModal>
-        <Router AppAssembly="@typeof(Program).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="lazyLoadedAssemblies">
-            <Found Context="routeData">
-                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                    <Authorizing>
-                        <div class="d-flex justify-content-center align-items-center">
-                            <h1>Overujem identitu...</h1>
-                        </div>
-                    </Authorizing>
-                </AuthorizeRouteView>
-            </Found>
-            <NotFound>
-                <CascadingAuthenticationState>
-                    @{
-                        // redirect to home page if not found
-                        NavigationManager.NavigateTo("");
-                    }
-                </CascadingAuthenticationState>
-            </NotFound>
-        </Router>
-    </CascadingBlazoredModal>
-</CascadingAuthenticationState>
+
+<CascadingBlazoredModal>
+    <Router AppAssembly="@typeof(Program).Assembly" OnNavigateAsync="OnNavigateAsync" AdditionalAssemblies="lazyLoadedAssemblies">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <h1>Overujem identitu...</h1>
+                    </div>
+                </Authorizing>
+                <NotAuthorized>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <h1>Neautorizovaný</h1>
+                    </div>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <CascadingAuthenticationState>
+                @{
+                    // redirect to home page if not found
+                    NavigationManager.NavigateTo("");
+                }
+            </CascadingAuthenticationState>
+        </NotFound>
+    </Router>
+</CascadingBlazoredModal>
+
 
 @code {
 

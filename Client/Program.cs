@@ -11,9 +11,10 @@ using Blazored.SessionStorage;
 using Blazored.Modal;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using BP_OnlineDOD.Client.Services;
 using Tewr.Blazor.FileReader;
-using BP_OnlineDOD.Client.HttpRepository;
+using BP_OnlineDOD.Client.Repository;
+using BP_OnlineDOD.Client.Helpers;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 
 namespace BP_OnlineDOD.Client
 {
@@ -24,27 +25,37 @@ namespace BP_OnlineDOD.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddBlazoredSessionStorage();
-            builder.Services.AddBlazoredModal();
-            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddHttpClient<HttpClientWithToken>(
+                client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
-            builder.Services.AddOptions();
-            builder.Services.AddAuthorizationCore();
+            builder.Services.AddHttpClient<HttpClientWithoutToken>(
+                client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 
-            builder.Services.AddScoped<TokenAuthenticationStateProvider, TokenAuthenticationStateProvider>();
-
-            builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
-            {
-                return provider.GetRequiredService<TokenAuthenticationStateProvider>();
-            });
-
-            builder.Services.AddScoped<IAccountService, AccountService>();
-
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            builder.Services.AddScoped<IHttpRepo, HttpRepo>();
-            builder.Services.AddFileReaderService(o => o.UseWasmSharedBuffer = true);
+            ConfigureServices(builder.Services);
 
             await builder.Build().RunAsync();
+        }
+        
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IHttpRepo, HttpRepo>();
+            services.AddScoped<IHttpService, HttpService>();
+            services.AddScoped<IMessagesRepository, MessagesRepository>();
+            services.AddScoped<IAccountsRepository, AccountsRepository>();
+            services.AddFileReaderService(o => {
+                o.UseWasmSharedBuffer = true;
+                o.InitializeOnFirstCall = true;
+            });
+
+            services.AddBlazoredSessionStorage();
+            services.AddBlazoredModal();
+            services.AddBlazoredLocalStorage();
+
+            services.AddOptions();
+
+            services.AddApiAuthorization();
+
         }
     }
 }

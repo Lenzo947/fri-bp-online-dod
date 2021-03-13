@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BP_OnlineDOD.Server.Dtos;
+using BP_OnlineDOD.Shared.DTOs;
 using BP_OnlineDOD.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ namespace BP_OnlineDOD.Server.Profiles
         public AttachmentsProfile()
         {
             //Source -> Target
-            CreateMap<Attachment, AttachmentReadDto>();
             CreateMap<AttachmentCreateDto, Attachment>();
         }
     }

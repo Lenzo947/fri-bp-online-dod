@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject NavigationManager NavigationManager
+@inject SignOutSessionStateManager SignOutManager
+
+<AuthorizeView>
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center">
+            <h1>Prihlásený ako @context.User.Identity.Name</h1>
+            <button class="btn btn-primary" @onclick="BeginSignOut">Log out</button>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center">
+            <button @onclick="Register" type="button" class="btn btn-danger mr-2">Registrovať</button>
+            <button @onclick="Login" type="button" class="btn btn-primary">Prihlásiť</button>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    private void Register()
+    {
+        NavigationManager.NavigateTo("authentication/register");
+    }
+
+    private void Login()
+    {
+        NavigationManager.NavigateTo("authentication/login");
+    }
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        NavigationManager.NavigateTo("authentication/logout");
+    }
+} 

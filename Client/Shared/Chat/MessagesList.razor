@@ -1,0 +1,126 @@
+﻿@implements IDisposable
+@inject IMessagesRepository MessagesRepository
+
+@if (Messages != null && Messages.Count > 0) // wait for all messages to load first
+{
+    foreach (Message msg in Messages.Reverse())
+    {
+        if (msg.ParentMessageId == null)
+        {
+            <MessageCard msg="@msg" Classes="mb-4" />
+        }
+    }
+}
+else if (Messages != null && Messages.Count == 0)
+{
+    if (NoMessages != null)
+    {
+        @NoMessages
+    }
+}
+else
+{
+    <SpinnerBig Classes="text-primary mb-4" />
+}
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationState { get; set; }
+
+    [CascadingParameter]
+    public IList<int> UpvotedMessages { get; set; }
+
+    [CascadingParameter]
+    public string Author { get; set; }
+
+    private Timer _timer { get; set; }
+
+    public virtual ICollection<Message> Messages { get; set; }
+
+    [Parameter]
+    public RenderFragment NoMessages { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+
+        _timer = new Timer(5000);
+        _timer.Elapsed += async (s, e) =>
+        {
+            await Load();
+        };
+        _timer.Enabled = true;
+
+    }
+
+    public void Dispose()
+    {
+        if (_timer != null)
+        {
+            _timer.Dispose();
+        }
+    }
+
+    public async Task Load()
+    {
+        var authState = await AuthenticationState;
+        var user = authState.User;
+
+        if (user.IsInRole("Admin"))
+        {
+            Messages = await MessagesRepository.GetAllMessagesWithDeleted();
+        }
+        else
+        {
+            Messages = await MessagesRepository.GetAllMessages();
+        }
+
+        Messages = await MessagesRepository.GetAllMessages();
+        //Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
+
+        StateHasChanged();
+
+        //var _messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
+
+        //if (Messages != null)
+        //{
+        //    bool found;
+        //    for (int i = 0; i < _messages.Count; i++)
+        //    {
+        //        found = false;
+        //        var newMsg = _messages.ElementAt(i);
+        //        int j;
+
+        //        for (j = 0; j < Messages.Count; j++)
+        //        {
+        //            var msg = Messages.ElementAt(j);
+
+        //            if (newMsg.Id == msg.Id && (newMsg.Author != msg.Author || newMsg.Text != msg.Text || newMsg.ThumbsUpCount != msg.ThumbsUpCount || newMsg.Deleted != msg.Deleted))
+        //            {
+        //                Messages.Remove(msg);
+        //                Messages.Add(newMsg);
+        //                found = true;
+        //                break;
+        //            }
+        //        }
+
+        //        if (!found)
+        //        {
+        //            Messages.Add(newMsg);
+        //        }
+        //    }
+
+        //    Messages = Messages.OrderBy(msg => msg.TimeSent).ToList();
+
+        //    StateHasChanged();
+        //}
+        //else
+        //{
+        //    Messages = _messages;
+        //}
+
+
+        //await JS.InvokeVoidAsync("checkResize");
+    }
+}

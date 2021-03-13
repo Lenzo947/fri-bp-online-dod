@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
 using BP_OnlineDOD.Server.Data;
-using BP_OnlineDOD.Server.Dtos;
+using BP_OnlineDOD.Shared.DTOs;
 using BP_OnlineDOD.Shared.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace BP_OnlineDOD.Server.Controllers
 {
-    [Route("api/attachments")]
     [ApiController]
+    [Route("api/attachments")]
+    [Authorize(Roles = "Admin")]
     public class AttachmentsController : ControllerBase
     {
         private readonly IOnlineDOD _onlineDOD;
@@ -22,21 +25,23 @@ namespace BP_OnlineDOD.Server.Controllers
 
         //GET api/attachments
         [HttpGet]
-        public ActionResult<IEnumerable<AttachmentReadDto>> GetAllAttachments()
+        [AllowAnonymous]
+        public ActionResult<IEnumerable<Attachment>> GetAllAttachments()
         {
             var attachmentItems = _onlineDOD.GetAllAttachments();
 
-            return Ok(_mapper.Map<IEnumerable<AttachmentReadDto>>(attachmentItems));
+            return Ok(attachmentItems);
         }
 
         //GET api/attachments/{id}
         [HttpGet("{id}", Name = "GetAttachmentById")]
-        public ActionResult<AttachmentReadDto> GetAttachmentById(int id)
+        [AllowAnonymous]
+        public ActionResult<Attachment> GetAttachmentById(int id)
         {
             var attachmentItem = _onlineDOD.GetAttachmentById(id);
             if (attachmentItem != null)
             {
-                return Ok(_mapper.Map<AttachmentReadDto>(attachmentItem));
+                return Ok(attachmentItem);
             }
 
             return NotFound();
@@ -44,15 +49,14 @@ namespace BP_OnlineDOD.Server.Controllers
 
         //POST api/attachments
         [HttpPost]
-        public ActionResult<AttachmentReadDto> CreateAttachment(AttachmentCreateDto attachmentCreateDto)
+        [AllowAnonymous]
+        public ActionResult<Attachment> CreateAttachment(AttachmentCreateDto attachmentCreateDto)
         {
             var attachmentModel = _mapper.Map<Attachment>(attachmentCreateDto);
             _onlineDOD.CreateAttachment(attachmentModel);
             _onlineDOD.SaveChanges();
 
-            var attachmentReadDto = _mapper.Map<AttachmentReadDto>(attachmentModel);
-
-            return CreatedAtRoute(nameof(GetAttachmentById), new { Id = attachmentReadDto.Id }, attachmentReadDto);
+            return CreatedAtRoute(nameof(GetAttachmentById), new { Id = attachmentModel.Id }, attachmentModel);
         }
 
         //DELETE api/attachments/{id}

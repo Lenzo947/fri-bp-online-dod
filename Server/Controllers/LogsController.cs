@@ -1,16 +1,17 @@
 ﻿using AutoMapper;
 using BP_OnlineDOD.Server.Data;
-using BP_OnlineDOD.Server.Dtos;
-using BP_OnlineDOD.Shared.Models;
-using Microsoft.AspNetCore.JsonPatch;
+using BP_OnlineDOD.Shared.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace BP_OnlineDOD.Server.Controllers
 {
 
-    [Route("api/logs")]
     [ApiController]
+    [Route("api/logs")]
+    [Authorize(Roles = "Admin")]
     public class LogsController : ControllerBase
     {
         private readonly IOnlineDOD _onlineDOD;

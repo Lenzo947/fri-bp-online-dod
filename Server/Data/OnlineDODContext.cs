@@ -1,11 +1,18 @@
 ﻿using BP_OnlineDOD.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using IdentityServer4.EntityFramework.Options;
 
 namespace BP_OnlineDOD.Server.Data
 {
-    public class OnlineDODContext : DbContext
+    public class OnlineDODContext : ApiAuthorizationDbContext<IdentityUser>
     {
-        public OnlineDODContext(DbContextOptions<OnlineDODContext> opt) : base(opt)
+        public OnlineDODContext(DbContextOptions<OnlineDODContext> opt, 
+            IOptions<OperationalStoreOptions> operationalStoreOptions) 
+            : base(opt, operationalStoreOptions)
         {
 
         }
@@ -18,8 +25,6 @@ namespace BP_OnlineDOD.Server.Data
 
         public DbSet<BlockedIP> BlockedIPs { get; set; }
 
-        //public DbSet<User> Users { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Message>()
@@ -31,6 +36,8 @@ namespace BP_OnlineDOD.Server.Data
                 .WithOne(c => c.Message);
 
             modelBuilder.Entity<Log>().ToTable("Logs");
+
+            base.OnModelCreating(modelBuilder);
         }
 
     }
