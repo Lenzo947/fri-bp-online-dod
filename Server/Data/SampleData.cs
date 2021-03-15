@@ -17,14 +17,14 @@ namespace BP_OnlineDOD.Server.Data
             _context = context;
         }
 
-        public async void SeedAdminUser()
+        public async void SeedAdminUser(string login = "admin@admin.com", string password = "Pa$$w0rd")
         {
             var user = new IdentityUser
             {
-                UserName = "admin@admin.com",
-                NormalizedUserName = "ADMIN@ADMIN.COM",
-                Email = "admin@admin.com",
-                NormalizedEmail = "ADMIN@ADMIN.COM",
+                UserName = login,
+                NormalizedUserName = login.ToUpper(),
+                Email = login,
+                NormalizedEmail = login.ToUpper(),
                 EmailConfirmed = true,
                 LockoutEnabled = false,
                 SecurityStamp = Guid.NewGuid().ToString()
@@ -37,14 +37,20 @@ namespace BP_OnlineDOD.Server.Data
                 await roleStore.CreateAsync(new IdentityRole { Name = "Admin", NormalizedName = "Admin" });
             }
 
+            if (!_context.Roles.Any(r => r.Name == "Editor"))
+            {
+                await roleStore.CreateAsync(new IdentityRole { Name = "Editor", NormalizedName = "Editor" });
+            }
+
             if (!_context.Users.Any(u => u.UserName == user.UserName))
             {
-                var password = new PasswordHasher<IdentityUser>();
-                var hashed = password.HashPassword(user, "Pa$$w0rd");
+                var passwordH = new PasswordHasher<IdentityUser>();
+                var hashed = passwordH.HashPassword(user, password);
                 user.PasswordHash = hashed;
                 var userStore = new UserStore<IdentityUser>(_context);
                 await userStore.CreateAsync(user);
                 await userStore.AddToRoleAsync(user, "Admin");
+                await userStore.AddToRoleAsync(user, "Editor");
             }
 
             await _context.SaveChangesAsync();

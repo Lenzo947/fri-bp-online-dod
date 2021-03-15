@@ -40,9 +40,6 @@ namespace BP_OnlineDOD.Client
         private static void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IHttpRepo, HttpRepo>();
-            services.AddScoped<IHttpService, HttpService>();
-            services.AddScoped<IMessagesRepository, MessagesRepository>();
-            services.AddScoped<IAccountsRepository, AccountsRepository>();
             services.AddFileReaderService(o => {
                 o.UseWasmSharedBuffer = true;
                 o.InitializeOnFirstCall = true;

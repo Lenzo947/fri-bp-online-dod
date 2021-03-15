@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BP_OnlineDOD.Client.Helpers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,16 +10,16 @@ namespace BP_OnlineDOD.Client.Repository
 {
     public class HttpRepo : IHttpRepo
     {
-        private readonly HttpClient _client;
+        private readonly HttpClientWithoutToken _client;
 
-        public HttpRepo(HttpClient client)
+        public HttpRepo(HttpClientWithoutToken client)
         {
             _client = client;
         }
 
         public async Task<string> UploadFile(MultipartFormDataContent content)
         {
-            var postResult = await _client.PostAsync("api/upload", content);
+            var postResult = await _client.HttpClient.PostAsync("api/upload", content);
             var postContent = await postResult.Content.ReadAsStringAsync();
 
             if (!postResult.IsSuccessStatusCode)
@@ -27,7 +28,7 @@ namespace BP_OnlineDOD.Client.Repository
             }
             else
             {
-                var fileUrl = Path.Combine(_client.BaseAddress.ToString(), postContent);
+                var fileUrl = Path.Combine(_client.HttpClient.BaseAddress.ToString(), postContent);
                 return fileUrl;
             }
         }

@@ -1,4 +1,5 @@
-﻿@inject IMessagesRepository MessagesRepository
+﻿@inject HttpClientWithoutToken httpClient
+@inject HttpClientWithToken httpClientToken
 @inject NavigationManager navigationManager
 @inject ILocalStorageService localStorage
 
@@ -127,7 +128,7 @@
         {
             <MessageCard msg="@child" Classes="mt-4" />
         }
-        
+
     </div>
 </div>
 
@@ -248,17 +249,17 @@
 
     public async Task Reply()
     {
-        var msgToSend = new Message() { Author = newMsg.Author, Text = newMsg.Text, ParentMessageId = msg.Id };
+        var payload = new { Author = newMsg.Author, Text = newMsg.Text, ParentMessageId = msg.Id };
 
         await localStorage.SetItemAsync<string>("author", newMsg.Author);
 
-        var response = await MessagesRepository.CreateMessage(msgToSend);
+        var response = await httpClient.HttpClient.PostAsJsonAsync("api/messages", payload);
 
-        if (response.HttpResponseMessage.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             reply = false;
 
-            Message result = response.Response;
+            Message result = await response.Content.ReadFromJsonAsync<Message>();
 
             msg.ChildMessages.Add(result);
 
@@ -268,9 +269,9 @@
 
     public async Task Edit()
     {
-        var response = await MessagesRepository.UpdateMessage(newMsg);
+        var response = await httpClientToken.HttpClient.PutAsJsonAsync($"api/messages/{msg.Id}", newMsg);
 
-        if (response.HttpResponseMessage.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             msg.Text = newMsg.Text;
 
@@ -280,9 +281,9 @@
 
     public async Task Renew()
     {
-        var response = await MessagesRepository.RenewMessage(msg.Id);
+        var response = await httpClientToken.HttpClient.DeleteAsync($"api/messages/renew/{msg.Id}");
 
-        if (response.HttpResponseMessage.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             edit = false;
 
@@ -294,9 +295,9 @@
 
     public async Task Hide()
     {
-        var response = await MessagesRepository.HideMessage(msg.Id);
+        var response = await httpClientToken.HttpClient.DeleteAsync($"api/messages/hide/{msg.Id}");
 
-        if (response.HttpResponseMessage.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             edit = false;
 
@@ -317,9 +318,9 @@
         {
             if (!UpvotedMessages.Contains(msg.Id))
             {
-                var response = await MessagesRepository.UpvoteMessage(msg.Id);
+                var response = await httpClient.HttpClient.PostAsync($"api/messages/upvote/{msg.Id}", null);
 
-                if (response.HttpResponseMessage.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
                     msg.ThumbsUpCount++;
 
@@ -332,9 +333,9 @@
             }
             else
             {
-                var response = await MessagesRepository.CancelMessageUpvote(msg.Id);
+                var response = await httpClient.HttpClient.PostAsync($"api/messages/cancel-upvote/{msg.Id}", null);
 
-                if (response.HttpResponseMessage.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
                     msg.ThumbsUpCount--;
 

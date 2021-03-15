@@ -39,6 +39,7 @@ namespace BP_OnlineDOD.Shared.Models
         {
             this.TimeSent = DateTime.UtcNow;
             this.ChildMessages = new List<Message>();
+            this.Attachments = new List<Attachment>();
         }
     }
 }

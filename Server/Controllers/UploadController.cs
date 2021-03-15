@@ -20,7 +20,7 @@ namespace BP_OnlineDOD.Server.Controllers
 
                 if (file.Length > 0)
                 {
-                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fileName = string.Concat(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"), "_", ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"'));
                     var fullPath = Path.Combine(pathToSave, fileName);
                     var dbPath = Path.Combine(folderName, fileName);
 

@@ -51,7 +51,18 @@ namespace BP_OnlineDOD.Server
                 }
 
                 var dataSeeder = services.GetService<SampleData>();
-                dataSeeder.SeedAdminUser();
+
+                var loginEnv = Environment.GetEnvironmentVariable("WEB_LOGIN");
+                var passwordEnv = Environment.GetEnvironmentVariable("WEB_PASSWORD");
+
+                if (loginEnv != null && passwordEnv != null)
+                {
+                    dataSeeder.SeedAdminUser(login: loginEnv, password: passwordEnv);
+                }
+                else
+                {
+                    dataSeeder.SeedAdminUser();
+                }
             }
             catch (Exception ex)
             {

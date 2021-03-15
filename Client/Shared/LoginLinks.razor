@@ -13,18 +13,12 @@
     </Authorized>
     <NotAuthorized>
         <div class="d-flex justify-content-center align-items-center">
-            <button @onclick="Register" type="button" class="btn btn-danger mr-2">Registrovať</button>
             <button @onclick="Login" type="button" class="btn btn-primary">Prihlásiť</button>
         </div>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-
-    private void Register()
-    {
-        NavigationManager.NavigateTo("authentication/register");
-    }
 
     private void Login()
     {

@@ -41,8 +41,4 @@
 	<BlazorWebAssemblyLazyLoad Include="MimeTypesMap.dll" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="HttpRepository\" />
-  </ItemGroup>
-
 </Project>

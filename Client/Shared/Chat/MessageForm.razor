@@ -1,4 +1,4 @@
-﻿@inject IMessagesRepository MessagesRepository
+﻿@inject HttpClientWithoutToken httpClient
 @inject NavigationManager navigationManager
 @inject IJSRuntime JS
 @inject ILocalStorageService localStorage
@@ -79,11 +79,15 @@
             await localStorage.SetItemAsync<string>("author", MessageModel.Author);
         }
 
-        var response = await MessagesRepository.CreateMessage(MessageModel);
+        var payload = new { Author = MessageModel.Author, Text = MessageModel.Text };
 
-        if (response.HttpResponseMessage.IsSuccessStatusCode)
+        var response = await httpClient.HttpClient.PostAsJsonAsync("api/messages", payload);
+
+        //var response = await MessagesRepository.CreateMessage(MessageModel);
+
+        if (response.IsSuccessStatusCode)
         {
-            var msg = response.Response;
+            var msg = await response.Content.ReadFromJsonAsync<Message>();
 
             if (filesToUpload.Count > 0)
             {
@@ -123,12 +127,11 @@
                     //await OnChange.InvokeAsync(newFileUrl);
                 }
 
-                var payload = new Attachment { ContentType = MimeTypesMap.GetMimeType(newFileUrl), Content = newFileUrl.Substring(newFileUrl.LastIndexOf("/files") + 1), MessageId = msgId };
+                var payload = new { ContentType = MimeTypesMap.GetMimeType(newFileUrl), Content = newFileUrl.Substring(newFileUrl.LastIndexOf("/files") + 1), MessageId = msgId };
 
-                var response = await MessagesRepository.CreateAttachment(payload);
+                var response = await httpClient.HttpClient.PostAsJsonAsync("api/attachments", payload);
             }
         }
-
     }
 
     private void RemoveAttachment(IBrowserFile file)
@@ -156,6 +159,7 @@
     {
         MessageModel.Text = null;
         ShowAttachments = false;
+        filesToUpload.Clear();
     }
 
 }

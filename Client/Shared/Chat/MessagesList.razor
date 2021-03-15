@@ -1,5 +1,6 @@
 ﻿@implements IDisposable
-@inject IMessagesRepository MessagesRepository
+@inject HttpClientWithoutToken httpClient
+@inject HttpClientWithToken httpClientToken
 
 @if (Messages != null && Messages.Count > 0) // wait for all messages to load first
 {
@@ -69,14 +70,13 @@ else
 
         if (user.IsInRole("Admin"))
         {
-            Messages = await MessagesRepository.GetAllMessagesWithDeleted();
+            Messages = await httpClientToken.HttpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
         }
         else
         {
-            Messages = await MessagesRepository.GetAllMessages();
+            Messages = await httpClient.HttpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
         }
 
-        Messages = await MessagesRepository.GetAllMessages();
         //Messages = await httpClient.GetFromJsonAsync<ICollection<Message>>("api/messages");
 
         StateHasChanged();

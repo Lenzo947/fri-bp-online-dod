@@ -1,6 +1,6 @@
 ﻿@page "/server-logs"
 @attribute [Authorize(Roles = "Admin")]
-@inject HttpClient httpClient
+@inject HttpClientWithToken httpClientToken
 @inject NavigationManager navigationManager
 
 <div class="btn btn-info mb-4" @onclick="NavigateToHome">Naspäť</div>
@@ -47,7 +47,7 @@ else
 
     protected async Task Load()
     {
-        Logs = await httpClient.GetFromJsonAsync<ICollection<Log>>("api/logs");
+        Logs = await httpClientToken.HttpClient.GetFromJsonAsync<ICollection<Log>>("api/logs");
     }
 
     private void NavigateToHome()

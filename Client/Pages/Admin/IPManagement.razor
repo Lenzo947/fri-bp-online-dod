@@ -1,6 +1,6 @@
 ﻿@page "/ip-management"
 @attribute [Authorize(Roles = "Admin")]
-@inject HttpClient httpClient
+@inject HttpClientWithToken httpClientToken
 @inject NavigationManager navigationManager
 
 <div class="btn btn-warning mb-4" @onclick="NavigateToHome">Naspäť</div>
@@ -61,14 +61,14 @@ else
 
     protected async Task Load()
     {
-        BlockedIPs = await httpClient.GetFromJsonAsync<ICollection<BlockedIP>>("api/blocked-ips");
+        BlockedIPs = await httpClientToken.HttpClient.GetFromJsonAsync<ICollection<BlockedIP>>("api/blocked-ips");
     }
 
     protected async Task Add()
     {
         var payload = new { Address = BlockedIPModel.Address };
 
-        var response = await httpClient.PostAsJsonAsync("api/blocked-ips", payload);
+        var response = await httpClientToken.HttpClient.PostAsJsonAsync("api/blocked-ips", payload);
 
         if (response.IsSuccessStatusCode)
         {
