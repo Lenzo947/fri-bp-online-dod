@@ -11,7 +11,7 @@ namespace BP_OnlineDOD.Server.Controllers
 {
     [ApiController]
     [Route("api/attachments")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Editor")]
     public class AttachmentsController : ControllerBase
     {
         private readonly IOnlineDOD _onlineDOD;

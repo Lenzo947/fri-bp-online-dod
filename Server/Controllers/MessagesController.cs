@@ -14,7 +14,7 @@ namespace BP_OnlineDOD.Server.Controllers
 
     [ApiController]
     [Route("api/messages")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Editor")]
     public class MessagesController : ControllerBase
     {
         private readonly IOnlineDOD _onlineDOD;
@@ -37,7 +37,7 @@ namespace BP_OnlineDOD.Server.Controllers
         {
             ICollection<Message> messageItems;
 
-            if(User.IsInRole("Admin")) // Doesn't seem to work when calling from client
+            if(User.IsInRole("Admin") || User.IsInRole("Editor"))
             {
                 
                 messageItems = _onlineDOD.GetAllMessagesWithDeleted();
@@ -60,7 +60,7 @@ namespace BP_OnlineDOD.Server.Controllers
             {
                 if (messageItem.Deleted)
                 {
-                    if (!User.IsInRole("Admin"))
+                    if (!User.IsInRole("Admin") && !User.IsInRole("Editor"))
                     {
                         return NotFound();
                     }
