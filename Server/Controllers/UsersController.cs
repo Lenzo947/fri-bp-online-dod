@@ -43,19 +43,31 @@ namespace BP_OnlineDOD.Server.Controllers
                 .Select(x => new RoleDTO { RoleName = x.Name }).ToListAsync();
         }
 
-        [HttpPost("assignRole")]
+        [HttpPost("assign-role")]
         public async Task<ActionResult> AssignRole(EditRoleDTO editRoleDTO)
         {
+            if (editRoleDTO.RoleName == "Admin")
+            {
+                return Unauthorized();
+            }
+
             var user = await userManager.FindByIdAsync(editRoleDTO.UserId);
-            await userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, editRoleDTO.RoleName));
+            await userManager.AddToRoleAsync(user, editRoleDTO.RoleName);
+            //await userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, editRoleDTO.RoleName));
             return NoContent();
         }
 
-        [HttpPost("removeRole")]
+        [HttpPost("remove-role")]
         public async Task<ActionResult> RemoveRole(EditRoleDTO editRoleDTO)
         {
+            if (editRoleDTO.RoleName == "Admin")
+            {
+                return Unauthorized();
+            }
+
             var user = await userManager.FindByIdAsync(editRoleDTO.UserId);
-            await userManager.RemoveClaimAsync(user, new Claim(ClaimTypes.Role, editRoleDTO.RoleName));
+            await userManager.RemoveFromRoleAsync(user, editRoleDTO.RoleName);
+            //await userManager.RemoveClaimAsync(user, new Claim(ClaimTypes.Role, editRoleDTO.RoleName));
             return NoContent();
         }
     }

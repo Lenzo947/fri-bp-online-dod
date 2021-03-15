@@ -57,11 +57,11 @@ namespace BP_OnlineDOD.Server
 
                 if (loginEnv != null && passwordEnv != null)
                 {
-                    dataSeeder.SeedAdminUser(login: loginEnv, password: passwordEnv);
+                    await dataSeeder.SeedAdminUser(login: loginEnv, password: passwordEnv);
                 }
                 else
                 {
-                    dataSeeder.SeedAdminUser();
+                    await dataSeeder.SeedAdminUser();
                 }
             }
             catch (Exception ex)

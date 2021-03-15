@@ -17,7 +17,7 @@ namespace BP_OnlineDOD.Server.Data
             _context = context;
         }
 
-        public async void SeedAdminUser(string login = "admin@admin.com", string password = "Pa$$w0rd")
+        public async Task SeedAdminUser(string login = "admin", string password = "Pa$$w0rd")
         {
             var user = new IdentityUser
             {
